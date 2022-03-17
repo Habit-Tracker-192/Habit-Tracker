@@ -1,5 +1,9 @@
 // import 'dart:html';
 // import 'package:flutter/services.dart';
+import 'package:first_app/notifications.dart';
+import 'package:first_app/home.dart';
+import 'package:first_app/goals_medyofinal.dart';
+import 'package:first_app/profile.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
 void main() {
@@ -21,15 +25,19 @@ Map<int, Color> purple =
 };
 
 
-
-
-
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+  int currentIndex = 0;
+  final screens = [
+    HomePage(),
+    Goal(),
+    NotificationPage(),
+    ProfilePage(),
+  ];
   
   final frequencies = [
       'Daily',
@@ -281,7 +289,10 @@ class _MyAppState extends State<MyApp> {
             backgroundColor: Colors.white,
             selectedItemColor: const Color.fromRGBO(100, 88, 204, 1),
             unselectedItemColor: Colors.grey,
-            showUnselectedLabels: true,
+            showSelectedLabels: false,
+            showUnselectedLabels: false,
+            currentIndex: currentIndex,
+            onTap: (index) => setState(() => currentIndex = index),
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: Icon(Icons.home_rounded,size: 45),
