@@ -7,14 +7,14 @@ import 'package:percent_indicator/percent_indicator.dart';
 
 
 class Notif extends StatefulWidget {
-  const NotificationPage ({Key? key}) : super(key: key);
+  const Notif ({Key? key}) : super(key: key);
 
 
   @override
   _NotificationPageState createState() => _NotificationPageState();
 }
 
-class _NotificationPageState extends State<NotificationPage> {
+class _NotificationPageState extends State<Notif> {
   @override
   Widget build(BuildContext context) => DefaultTabController (
       length: 1,
@@ -60,7 +60,7 @@ class Recent extends StatefulWidget {
 
 class _RecentState extends State<Recent> {
 
-  List goal = ["@CalebBunye accepted \n your friend request.", "@DenCute sent you a \n friend request.", "Take / Fix Notes", "Exercise", "Read Books"];
+  List goal = ["@CalebBunye accepted your friend request.", "@DenCute sent you a friend request.", "Take / Fix Notes", "Exercise", "Read Books"];
 
   List progress = [20, 35, 15, 35, 54];
   List total = [20, 50, 20, 50, 90];
@@ -107,9 +107,10 @@ class _RecentState extends State<Recent> {
                                 Container(
                                   //width: MediaQuery.of(context).size.width,
                                   padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                                  child: Text(
-                                    goal[index], style: TextStyle(color: Color.fromARGB(255, 72, 68, 80), fontSize: 18.0, fontFamily: 'Poppins', fontWeight: FontWeight.bold, letterSpacing: 1.1), textAlign: TextAlign.left,),
-                                ),
+                                  child: Flexible(
+                                    child: Text(
+                                      goal[index], style: TextStyle(color: Color.fromARGB(255, 72, 68, 80), fontSize: 18.0, fontFamily: 'Poppins', fontWeight: FontWeight.bold, letterSpacing: 1.1), textAlign: TextAlign.left,),
+                                  ),
                                 ]
                               ),
 
