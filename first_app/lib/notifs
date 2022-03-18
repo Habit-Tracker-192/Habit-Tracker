@@ -60,7 +60,7 @@ class Recent extends StatefulWidget {
 
 class _RecentState extends State<Recent> {
 
-  List goal = ["@CalebBunye accepted \n your friend request.", "@DenCute sent you a friend \n request.", "Take / Fix Notes", "Exercise", "Read Books"];
+  List goal = ["@CalebBunye accepted \n your friend request.", "@DenCute sent you a \n friend request.", "Take / Fix Notes", "Exercise", "Read Books"];
 
   List progress = [20, 35, 15, 35, 54];
   List total = [20, 50, 20, 50, 90];
