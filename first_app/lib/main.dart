@@ -1,109 +1,74 @@
-// import 'dart:html';
-// import 'package:flutter/services.dart';
-import 'package:first_app/notifs.dart';
-import 'package:first_app/home.dart';
-import 'package:first_app/goals_medyofinal.dart';
-import 'package:first_app/profile.dart';
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
-import 'dart:developer';
+import 'screens/goals.dart';
+import 'screens/notifs.dart';
+import 'screens/addgoal.dart';
+import 'screens/profile.dart';
+import 'screens/home.dart';
+
+
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-Map<int, Color> purple =
-{
-50:const Color.fromRGBO(100, 88, 204, .1),
-100:const Color.fromRGBO(100, 88, 204, .2),
-200:const Color.fromRGBO(100, 88, 204, .3),
-300:const Color.fromRGBO(100, 88, 204, .4),
-400:const Color.fromRGBO(100, 88, 204, .5),
-500:const Color.fromRGBO(100, 88, 204, .6),
-600:const Color.fromRGBO(100, 88, 204, .7),
-700:const Color.fromRGBO(100, 88, 204, .8),
-800:const Color.fromRGBO(100, 88, 204, .9),
-900:const Color.fromRGBO(100, 88, 204, 1),
-};
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
-
-class MyApp extends StatefulWidget {
+  // This widget is the root of your application.
   @override
-  _MyAppState createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        fontFamily: 'Poppins',
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+
+      ),
+      home: MyHomePage(title: '',),
+      debugShowCheckedModeBanner: false,
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
-  int currentIndex = 0;
-  final screens = [
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
+
+  final String title;
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+
+  int _currentIndex = 0;
+
+   final screens = [
     HomePage(),
     Goal(),
     Notif(),
     Profile(),
+    AddGoal(),
   ];
   
-  final frequencies = [
-      'Daily',
-      'Weekly',
-      'Monthly'
-    ];
-
-  TextEditingController _timesController = TextEditingController(text:1.toString());
-  TextEditingController _durationController = TextEditingController(text:1.toString());
-  TextEditingController _goalNameController = TextEditingController();
-  TextEditingController _goalDescriptionController = TextEditingController();
-
-  String frequency = 'Daily';
-
-  var _textformfield_times = GlobalKey<FormFieldState>();
-  var _textformfield_duration = GlobalKey<FormFieldState>();
-  var _textformfield_frequency = GlobalKey<FormFieldState>();
-  var _textformfield_goalName = GlobalKey<FormFieldState>();
-  var _textformfield_goalDescription = GlobalKey<FormFieldState>();
-
-  String? value;
   @override
   Widget build(BuildContext context) {
-    
-    DropdownMenuItem<String> buildMenuItem(String some) => DropdownMenuItem(
-        value: some,
-        child: Text(
-          some, 
-          style: const TextStyle(
-            fontWeight: FontWeight.bold, 
-            fontSize: 18,
-          ),
-        ),
-      );
-
-    MaterialColor themeColor= MaterialColor(0xFF5462CF, purple);
-    return MaterialApp(
-    theme: ThemeData(
-      primarySwatch: themeColor,
-      scaffoldBackgroundColor:const Color.fromRGBO(176,156,220, 1),
-      shadowColor: Colors.grey,
-      // bottomAppBarColor: themeColor,
-      ),
-      home: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          title: Row( 
-          children: <Widget>[
-            Image.asset('assets/images/habit_tracker_logo.png', fit: BoxFit.cover, width: 60, height:60, ),
-            const Text('Habit Tracker'),
-          ],
-          ),
-        ),
-        body: screens[currentIndex]
-
-        bottomNavigationBar: SizedBox(
-          height: 75,
+    return Scaffold(
+      //appBar: AppBar(
+        //title: Text(widget.title),
+      //),
+      body: screens[_currentIndex],
+      bottomNavigationBar: SizedBox(
+          height: 85,
           child: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.white,
             selectedItemColor: const Color.fromRGBO(100, 88, 204, 1),
             unselectedItemColor: Colors.grey,
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            currentIndex: currentIndex,
-            onTap: (index) => setState(() => currentIndex = index),
+            showUnselectedLabels: true,
+            onTap: onTabTapped,
+            currentIndex: _currentIndex,
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: Icon(Icons.home_rounded,size: 45),
@@ -122,17 +87,37 @@ class _MyAppState extends State<MyApp> {
                 label: 'Profile',
               ),
             ],
+            // onTap: (index) {
+            //   setState(() {
+            //     _currentIndex = index;
+            //   });
+            // },
             elevation: 0, 
           ),
         ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
           floatingActionButton: FloatingActionButton(
-            onPressed: null,
+            onPressed: (){
+              // Navigator.push(
+              // context,
+              // MaterialPageRoute(builder: (context) => const AddGoal()),
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddGoal()),
+
+            );
+                //onTabTapped(3);
+            }, 
             tooltip: 'Add',
             child: const Icon(Icons.add),
-            backgroundColor: themeColor[900],
+            backgroundColor: Color.fromRGBO(100, 88, 204, 1),
           ),
-        ),     
-      );
+      
+    );
+  }
+
+
+  void onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
   }
 }
