@@ -66,7 +66,8 @@ class _MyHomePageState extends State<MyHomePage> {
             backgroundColor: Colors.white,
             selectedItemColor: const Color.fromRGBO(100, 88, 204, 1),
             unselectedItemColor: Colors.grey,
-            showUnselectedLabels: true,
+            showUnselectedLabels: false,
+            showSelectedLabels: false,
             onTap: onTabTapped,
             currentIndex: _currentIndex,
             items: const <BottomNavigationBarItem>[
