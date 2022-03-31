@@ -100,7 +100,18 @@ class FireAuth {
     }
   return user;
   }
-
+  
+  //signout
+  static Future signOut() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    try {
+      return await auth.signOut();
+      
+    } catch(e){
+      print(e.toString());  
+    }
+   
+  }
   //refresh user
   static Future<User?> refreshUser(User user) async {
   FirebaseAuth auth = FirebaseAuth.instance;
