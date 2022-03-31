@@ -12,9 +12,41 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) => DefaultTabController (
       length: 3,
       child: Scaffold(
-          appBar: (PreferredSize(
-            preferredSize: Size.fromHeight(85.0),
+
+          appBar:
+          (PreferredSize(
+            preferredSize: Size.fromHeight(202.0),
+
             child: AppBar(
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/header.png'),
+                    fit: BoxFit.cover
+
+                  ),
+                ),
+
+                child: new Container(
+                  margin: EdgeInsets.all(2),
+                  padding: EdgeInsets.fromLTRB(1.0, 100.0, .0, 110.0),
+                  width: 500,
+                  child: new Text('FRIDAY, APRIL 1',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontStyle: FontStyle.normal,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 27.0,
+                        color: Colors.white,
+                    ),
+                  ),
+
+                ),
+                ),
+
+
+
               backgroundColor: Color.fromARGB(255, 154, 153, 238),
               title: Container(
                 child: IconButton(
@@ -23,8 +55,10 @@ class _HomePageState extends State<HomePage> {
                   icon: Icon(Icons.search_rounded, size: 30.0),
 
                   onPressed: (){},
+
                 ),
               ),
+
               bottom: TabBar(
                 padding: EdgeInsets.fromLTRB(0,0,5,0),
                 isScrollable: true,
