@@ -1,7 +1,10 @@
 
+import 'package:first_app/services/authenticate.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'categDetail.dart';
+import 'login.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -12,6 +15,9 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+
+  final FireAuth auth = FireAuth();
+
   List<String> usernames = [];
   List<String> names = [];
 
@@ -20,14 +26,27 @@ class _ProfileState extends State<Profile> {
     length: 2,
     child: Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(320.0),
+        preferredSize: Size.fromHeight(300.0),
         child: AppBar(
-          leading: GestureDetector(
-            onTap: () {},
-            child: const Icon(
-              Icons.logout_rounded,
-              size: 35,
-              color: Color.fromRGBO(64, 64, 64, 1),// add custom icons also
+          //backgroundColor: Color.fromARGB(255, 154, 153, 238),
+          title: Container(
+            child: IconButton(
+              alignment: Alignment.topRight,
+              padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+              icon: Icon(Icons.logout_rounded, size: 30.0,color: Color.fromRGBO(64, 64, 64, 1)),
+              
+
+              onPressed: () async {
+                
+                  await FireAuth.signOut();
+                  // Navigator.push(context,
+                  // MaterialPageRoute(builder: (context) => Login()));
+                  Navigator.pushAndRemoveUntil(context,
+                  MaterialPageRoute(builder: (builder) => Login()), (route) => false);
+                //}
+                //);
+                
+              },
             ),
           ),
           actions: [
@@ -140,21 +159,22 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
       child: Column(
         children: [
           SizedBox(height: 5),
-          Container( //CATEGORY TEXT
-            height: 27,
+          Container( //RECENT LOG TEXT
+            //padding: EdgeInsets.fromLTRB(0,0,0,0),
+            height: 45,
             alignment: Alignment.centerLeft,
             child: Text('    Recent Log', style: TextStyle(fontSize: 20, fontFamily: 'Poppins'))
           ),
           Container(  //RECENT GOALS LISTVIEW
-            height: 190,
+            height: 280,
             child: ListView.builder(
-            padding: EdgeInsets.fromLTRB(0,0,0,0),
+            padding: EdgeInsets.fromLTRB(0,5,0,0),
             itemCount: goal.length,
             shrinkWrap: true,
             itemBuilder: (BuildContext context, int index) =>   
             Container( //return gesturedetector child: container
                 width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 2.0),
+                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.0),
                 child: Card(
                   elevation: 5.0,
                   shape: RoundedRectangleBorder(
@@ -162,7 +182,7 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
                   ),
                   child: Container(
                     width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
+                    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,7 +206,7 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
                                     
                                     IconButton(
                                       alignment: Alignment.centerRight,
-                                      padding: EdgeInsets.only(left:145),
+                                      padding: EdgeInsets.only(left:125),
                                       icon: Icon(Icons.edit, size: 15.0),
 
                                       onPressed: (){},
@@ -211,7 +231,7 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
                                     ),
                                     
                                     Center(child:
-                                      SizedBox(width: 210)
+                                      SizedBox(width: 190)
                                     ),
                                     
                                     Text(((progress[index]/total[index])*100).toInt().toString() 
@@ -224,7 +244,7 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
                                 Padding(
                                   padding: const EdgeInsets.fromLTRB(0,0,0,10),
                                   child: LinearPercentIndicator( //Recent Goal linear percent bar
-                                    width: 335,
+                                    width: 310,
                                     animation: true,
                                     lineHeight: 15,
                                     center: Row(
@@ -233,7 +253,7 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
                                         Text(progress[index].toString(), style: TextStyle(fontSize: 12, color:
                                         Color.fromARGB(255, 228, 223, 238))),
                                         Center(child:
-                                          SizedBox(width: 260)
+                                          SizedBox(width: 230)
                                         ),
                                         Text(total[index].toString(), style: TextStyle(fontSize: 12, color:
                                         Color.fromARGB(255, 143, 141, 150))),
@@ -256,97 +276,97 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
               )
             ),
           ),
-          Container( //CATEGORY TEXT
-            height: 27,
-            alignment: Alignment.centerLeft,
-            child: Text('    Categories', style: TextStyle(fontSize: 20, fontFamily: 'Poppins'))
-          ),
-          Container(    //CATEGORY LISTVIEW
-            height: 60,
-            child: ListView.builder(
-              itemCount: 1,
-              itemBuilder: (BuildContext ctx, int index){
-                return GestureDetector(
-                onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => categDetail()),
-                  );
-                },
-                child:
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                  height: 175,
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Image.asset('assets/images/Education.png',
-                            fit: BoxFit.cover
-                          )
-                        )
-                      ),
-                      Positioned(
-                        bottom: 6,
-                        left: 30,
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(width: 10),
+          // Container( //CATEGORY TEXT
+          //   height: 27,
+          //   alignment: Alignment.centerLeft,
+          //   child: Text('    Categories', style: TextStyle(fontSize: 20, fontFamily: 'Poppins'))
+          // ),
+          // Container(    //CATEGORY LISTVIEW
+          //   height: 110,
+          //   child: ListView.builder(
+          //     itemCount: 1,
+          //     itemBuilder: (BuildContext ctx, int index){
+          //       return GestureDetector(
+          //       onTap: () {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //             builder: (BuildContext context) => categDetail()),
+          //         );
+          //       },
+          //       child:    
+          //       Container(
+          //         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+          //         height: 175,
+          //         child: Stack(
+          //           children: [
+          //             Positioned.fill(
+          //               child: ClipRRect(
+          //                 borderRadius: BorderRadius.circular(15),
+          //                 child: Image.asset('assets/images/Education.png', 
+          //                   fit: BoxFit.cover
+          //                 )
+          //               )
+          //             ),
+          //             Positioned(
+          //               bottom: 6,
+          //               left: 30,
+          //               child: Padding(
+          //                 padding: const EdgeInsets.all(10.0),
+          //                 child: Column(
+          //                   crossAxisAlignment: CrossAxisAlignment.start,
+          //                   children: [
+          //                     SizedBox(width: 10),
 
-                              Row(
-                                children: [
-                                  Text(category[index], style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
-                                    fontSize: 18, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.3)),
-                                  Center(child:
-                                    SizedBox(width: 110)
-                                  ),
-                                  Text(((categProgress[index]/categTotal[index])*100).toInt().toString()
-                                      + '% completed', style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
-                                      fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
-                                      letterSpacing: 1.3)),
-                                ],
-                              ),
-
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0,7,0,0),
-                                child: LinearPercentIndicator(  //Category Linear Percent Indicator
-                                  width: 330,
-                                  animation: true,
-                                  lineHeight: 16,
-                                  center: Row(
-                                    children: [
-                                      Text(categProgress[index].toString(), style: TextStyle(fontSize: 12, color:
-                                      Color.fromARGB(255, 228, 223, 238))),
-                                      Center(child:
-                                        SizedBox(width: 255)
-                                      ),
-                                      Text(categTotal[index].toString(), style: TextStyle(fontSize: 12, color:
-                                      Color.fromARGB(255, 143, 141, 150))),
-                                    ],
-                                  ),
-                                  linearStrokeCap: LinearStrokeCap.roundAll,
-                                  percent: categProgress[index]/categTotal[index],
-                                  progressColor: Color.fromARGB(255, 61, 68, 95),
-                                  backgroundColor: Color.fromARGB(255, 228, 223, 238),
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                      )
-                    ],
-                  )
-                ));
-              },
-            )
-          )
-      ,])
+          //                     Row(
+          //                       children: [
+          //                         Text(category[index], style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
+          //                           fontSize: 18, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
+          //                           letterSpacing: 1.3)),                            
+          //                         Center(child:
+          //                           SizedBox(width: 110)
+          //                         ),
+          //                         Text(((categProgress[index]/categTotal[index])*100).toInt().toString() 
+          //                             + '% completed', style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
+          //                             fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
+          //                             letterSpacing: 1.3)),
+          //                       ],
+          //                     ),
+                              
+          //                     Padding(
+          //                       padding: EdgeInsets.fromLTRB(0,7,0,0),
+          //                       child: LinearPercentIndicator(  //Category Linear Percent Indicator
+          //                         width: 330,
+          //                         animation: true,
+          //                         lineHeight: 16,
+          //                         center: Row(
+          //                           children: [
+          //                             Text(categProgress[index].toString(), style: TextStyle(fontSize: 12, color:
+          //                             Color.fromARGB(255, 228, 223, 238))),
+          //                             Center(child:
+          //                               SizedBox(width: 255)
+          //                             ),
+          //                             Text(categTotal[index].toString(), style: TextStyle(fontSize: 12, color:
+          //                             Color.fromARGB(255, 143, 141, 150))),
+          //                           ],
+          //                         ),
+          //                         linearStrokeCap: LinearStrokeCap.roundAll,
+          //                         percent: categProgress[index]/categTotal[index],
+          //                         progressColor: Color.fromARGB(255, 61, 68, 95),
+          //                         backgroundColor: Color.fromARGB(255, 228, 223, 238),
+          //                       ),
+          //                     )
+          //                   ],
+          //                 ),
+          //               )
+          //             )
+          //           ],
+          //         )
+          //       ));
+          //     },
+          //   )
+          // )
+      ])
     )
   );
 }
@@ -371,21 +391,23 @@ class _FriendsState extends State<Friends> {
     body: SafeArea(
       child: Column(
         children: [
-        Container( //Friends Logs
-
-          height: 30,
+          SizedBox(height: 5),
+        Container(
+           //Friends Logs 
+          height: 47,
+          //padding: EdgeInsets.fromLTRB(0,15,0,0),
           alignment: Alignment.centerLeft,
           child: Text('    Friends\' Logs', style: TextStyle(fontSize: 20, fontFamily: 'Poppins'))
         ),
         Container(
-          height:270,
+          height:280,
           child: ListView.builder(
-              padding: EdgeInsets.fromLTRB(0,0,0,0),
+              padding: EdgeInsets.fromLTRB(0,5,0,0),
               itemCount: goal.length,
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index) => Container(
                 width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 2.0),
+                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.0),
                 child: Card(
                   elevation: 5.0,
                   shape: RoundedRectangleBorder(
@@ -393,7 +415,7 @@ class _FriendsState extends State<Friends> {
                   ),
                   child: Container(
                     width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
+                    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -421,7 +443,7 @@ class _FriendsState extends State<Friends> {
                                     
                                     IconButton(
                                       alignment: Alignment.centerRight,
-                                      padding: EdgeInsets.only(left:50),
+                                      padding: EdgeInsets.only(left:30),
                                       icon: Icon(Icons.edit, size: 15.0),
 
                                       onPressed: (){},
@@ -446,7 +468,7 @@ class _FriendsState extends State<Friends> {
                                     ),
                                     
                                     Center(child:
-                                      SizedBox(width: 210)
+                                      SizedBox(width: 190)
                                     ),
                                     
                                     Text(((progress[index]/total[index])*100).toInt().toString() 
@@ -459,7 +481,7 @@ class _FriendsState extends State<Friends> {
                                 Padding(
                                   padding: const EdgeInsets.fromLTRB(0,0,0,10),
                                   child: LinearPercentIndicator( //Recent Goal linear percent bar
-                                    width: 335,
+                                    width: 300,
                                     animation: true,
                                     lineHeight: 15,
                                     center: Row(
@@ -468,7 +490,7 @@ class _FriendsState extends State<Friends> {
                                         Text(progress[index].toString(), style: TextStyle(fontSize: 12, color:
                                         Color.fromARGB(255, 228, 223, 238))),
                                         Center(child:
-                                          SizedBox(width: 260)
+                                          SizedBox(width: 240)
                                         ),
                                         Text(total[index].toString(), style: TextStyle(fontSize: 12, color:
                                         Color.fromARGB(255, 143, 141, 150))),
@@ -497,5 +519,4 @@ class _FriendsState extends State<Friends> {
    
   );
 }
-
 
