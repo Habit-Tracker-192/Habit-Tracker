@@ -59,7 +59,7 @@ class categDetail extends StatelessWidget {
             itemBuilder: (BuildContext context, int index) =>   
             Container( //return gesturedetector child: container
                 width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
                 child: Card(
                   elevation: 5.0,
                   shape: RoundedRectangleBorder(
