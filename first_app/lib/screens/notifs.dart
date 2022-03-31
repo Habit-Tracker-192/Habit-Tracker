@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
-
+// ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-//import 'recent.dart';
+import 'searchUser.dart';
 
 
 class Notif extends StatefulWidget {
@@ -11,10 +10,10 @@ class Notif extends StatefulWidget {
 
 
   @override
-  _NotificationPageState createState() => _NotificationPageState();
+  _NotifState createState() => _NotifState();
 }
 
-class _NotificationPageState extends State<Notif> {
+class _NotifState extends State<Notif> {
   @override
   Widget build(BuildContext context) => DefaultTabController (
       length: 1,
@@ -26,10 +25,13 @@ class _NotificationPageState extends State<Notif> {
               title: Container(
                 child: IconButton(
                   alignment: Alignment.topRight,
-                  padding: EdgeInsets.fromLTRB(350, 15, 0, 0),
+                  padding: EdgeInsets.fromLTRB(330, 15, 0, 0),
                   icon: Icon(Icons.search_rounded, size: 30.0),
 
-                  onPressed: (){},
+                  onPressed: (){
+                    Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SearchUser()));
+                  },
                 ),
               ),
               bottom: TabBar(
@@ -53,7 +55,6 @@ class _NotificationPageState extends State<Notif> {
       )
   );
 }
-
 class Recent extends StatefulWidget {
   _RecentState createState() => _RecentState();
 }
