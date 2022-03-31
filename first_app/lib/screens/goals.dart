@@ -575,7 +575,7 @@ class _AllState extends State<All> {
               ),
               child: Container(
                 width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
+                padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
