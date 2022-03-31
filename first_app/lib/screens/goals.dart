@@ -74,7 +74,7 @@ class _RecentState extends State<Recent> {  //RECENT TAB
 
   List goal = ["Exercise", "Read Books", "Journaling"];
   List goalcategory = ["Health", "Recreation", "Recreation"];
-  List progress = [35, 54, 20];
+  List progress = [35, 54, 20 ];
   List total = [50, 90, 20];
   List category = ["Education", "Health"];
   List categProgress = [200, 150];
