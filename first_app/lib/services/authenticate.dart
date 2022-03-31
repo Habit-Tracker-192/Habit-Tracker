@@ -15,6 +15,7 @@ class FireAuth {
 
   }) async {
     FirebaseAuth auth = FirebaseAuth.instance; //initializes instance of user database
+    FirebaseFirestore _firestore = FirebaseFirestore.instance; //added
     User? user;
     String message = '';
 
@@ -44,6 +45,12 @@ class FireAuth {
         email: email,
         password: password,
       );
+      
+      await _firestore.collection('UserData').doc(userCredential.user?.uid).set(  //added
+      {"username":name, 
+      "email": email
+      });     
+      
       user = userCredential.user;
       await user!.updateDisplayName(name);
       await user.reload();
