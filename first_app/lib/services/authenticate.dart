@@ -1,6 +1,7 @@
 //SERVICES INCLUDE LOGGIN IN, SIGNING UP, REFRESHING USER
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FireAuth {
   
