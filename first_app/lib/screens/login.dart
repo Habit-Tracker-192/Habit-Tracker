@@ -1,22 +1,24 @@
-import 'package:first_app/components/already_have_an_account_acheck.dart';
-import 'package:flutter/material.dart';
-
+//package
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:first_app/services/authenticate.dart';
 import 'package:first_app/main.dart';
+import 'package:flutter/material.dart';
+import 'dart:io';
 
+//screeens
 import 'goals.dart';
 import 'notifs.dart';
 import 'addgoal.dart';
 import 'profile.dart';
 import 'home.dart';
 import 'signup.dart';
+import 'package:first_app/components/already_have_an_account_acheck.dart';
 
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  var _textformfield_email = GlobalKey<FormFieldState>();
-  var _textformfield_password = GlobalKey<FormFieldState>();
+  TextEditingController _emailLoginController = TextEditingController();
+  TextEditingController _passwordLoginController = TextEditingController();
+  var _textformfield_login_email = GlobalKey<FormFieldState>();
+  var _textformfield_login_password = GlobalKey<FormFieldState>();
 
 class Login extends StatelessWidget {
 
@@ -46,8 +48,8 @@ class Login extends StatelessWidget {
                       children: [
                         Image.asset('assets/images/habit_tracker_logo.png'),
                         TextFormField(
-                                    key: _textformfield_email,
-                                    controller: _emailController,
+                                    key: _textformfield_login_email,
+                                    controller: _emailLoginController,
                                     decoration:  InputDecoration(
                                       hintText: 'Email',
                                       labelStyle: const TextStyle(
@@ -79,8 +81,8 @@ class Login extends StatelessWidget {
                                   ),
                         SizedBox(height: 10),
                         TextFormField(
-                                    key: _textformfield_password,
-                                    controller: _passwordController,
+                                    key: _textformfield_login_password,
+                                    controller: _passwordLoginController,
                                     decoration:  InputDecoration(
                                       hintText: 'Password',
                                       labelStyle: const TextStyle(
@@ -130,20 +132,29 @@ class Login extends StatelessWidget {
                                     textColor: Colors.white,
                                     color: const Color.fromRGBO(48,52,68, 1),
                                     onPressed: () async {
-                                          if (_formKey1.currentState!.validate()) {//returns true if both fields are valid
-                                            User? user = await FireAuth.signInUsingEmailPassword(
-                                              email: _emailController.text,
-                                              password: _passwordController.text,
-                                              context: context,
-                                            );
-                                            if (user != null) {
-                                              Navigator.of(context)
-                                                .pushReplacement(
-                                                  MaterialPageRoute(builder: (context) => const MyHomePage(title: '',),
-                                                ),
-                                              );
+                                          String _connectionerror = '';
+                                          try {//tries to connect to google.com to check if the user has access to internet
+                                              final result = await InternetAddress.lookup('google.com');
+                                              if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                                                if (_formKey1.currentState!.validate()) {//returns true if both fields are valid
+                                                  User? user = await FireAuth.signInUsingEmailPassword(
+                                                    email: _emailLoginController.text,
+                                                    password: _passwordLoginController.text,
+                                                    context: context,
+                                                  );
+                                                  if (user != null) {
+                                                    Navigator.of(context)
+                                                      .pushReplacement(
+                                                        MaterialPageRoute(builder: (context) => const MyHomePage(title: '',)),
+                                                      )
+                                                      .then((_) => _formKey1.currentState?.reset());
+                                                  }
+                                                }
+                                              }
+                                            } on SocketException catch (_) {
+                                              _connectionerror = 'Connection Error: Please connect your device to the internet';
+                                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_connectionerror), backgroundColor: Colors.red,));
                                             }
-                                          }
                                         },
                                       // if ((_textformfield_username.currentState!.validate()) &&
                                       // (_textformfield_password.currentState!.validate())){
@@ -160,6 +171,7 @@ class Login extends StatelessWidget {
                                     })
                                   );
                               },
+                              screenFormKey: _formKey1,
                             )
                           ]
                     )
