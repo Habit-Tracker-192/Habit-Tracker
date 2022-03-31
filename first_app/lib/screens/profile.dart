@@ -371,13 +371,14 @@ class _FriendsState extends State<Friends> {
     body: SafeArea(
       child: Column(
         children: [
-        Container( //Friends Logs 
-          height: 27,
+        Container( //Friends Logs
+
+          height: 30,
           alignment: Alignment.centerLeft,
           child: Text('    Friends\' Logs', style: TextStyle(fontSize: 20, fontFamily: 'Poppins'))
         ),
         Container(
-          height:339,
+          height:270,
           child: ListView.builder(
               padding: EdgeInsets.fromLTRB(0,0,0,0),
               itemCount: goal.length,
