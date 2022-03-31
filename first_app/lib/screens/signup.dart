@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'dart:io';
 
 //screens
 import 'login.dart';
@@ -12,18 +13,18 @@ import 'package:first_app/main.dart';
 import 'package:first_app/services/authenticate.dart';
 
 //controllers
-TextEditingController _usernameController = TextEditingController();
-TextEditingController _emailController = TextEditingController();
-TextEditingController _ageController = TextEditingController();
+TextEditingController _usernameSignupController = TextEditingController();
+TextEditingController _emailSignupController = TextEditingController();
+TextEditingController _ageSignupController = TextEditingController();
 // no controller for gender bc it is a dropdown button
-TextEditingController _passwordController = TextEditingController();
+TextEditingController _passwordSignupController = TextEditingController();
 
 //global keys
-var _textformfield_username = GlobalKey<FormFieldState>();
-var _textformfield_email = GlobalKey<FormFieldState>();
-var _textformfield_age = GlobalKey<FormFieldState>();
-var _textformfield_gender = GlobalKey<FormFieldState>();
-var _textformfield_password = GlobalKey<FormFieldState>();
+var _textformfield_signup_username = GlobalKey<FormFieldState>();
+var _textformfield_signup_email = GlobalKey<FormFieldState>();
+var _textformfield_signup_age = GlobalKey<FormFieldState>();
+var _textformfield_signup_gender = GlobalKey<FormFieldState>();
+var _textformfield_signup_password = GlobalKey<FormFieldState>();
 
 
 //processing of account registration
@@ -53,27 +54,7 @@ class _SignUpState extends State<SignUp> {
   
   final FirebaseAuth _auth = FirebaseAuth.instance;//instance of user database
   
-  Widget _buildPopupDialogSignup(BuildContext context) {
-  return AlertDialog(
-    title: const Text('Congrats! Your account has been created'),
-    content:  Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: const <Widget>[
-        Text("Please login using your credentials back at the Login Page"),
-      ],
-    ),
-    actions: <Widget>[
-       FlatButton(
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-        textColor: Theme.of(context).primaryColor,
-        child: const Text('Close'),
-      ),
-    ],
-  );
-  }
+  
   
 
   Future<void> _trySubmit( BuildContext context) async {//validates and creates user
@@ -90,10 +71,6 @@ class _SignUpState extends State<SignUp> {
         gender: _userGender,
         password: _userPassword,
         context: context
-      );
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => _buildPopupDialogSignup(context),
       );
     }
   }
@@ -132,8 +109,8 @@ class _SignUpState extends State<SignUp> {
                 children: [
                   Image.asset('assets/images/habit_tracker_logo.png'),
                   TextFormField(
-                              key: _textformfield_username,
-                              controller: _usernameController,
+                              key: _textformfield_signup_username,
+                              controller: _usernameSignupController,
                               decoration:  InputDecoration(
                                 hintText: 'Username',
                                 labelStyle: const TextStyle(
@@ -171,8 +148,8 @@ class _SignUpState extends State<SignUp> {
                             ),
                   const SizedBox(height: 10),
                   TextFormField(
-                              key: _textformfield_email,
-                              controller: _emailController,
+                              key: _textformfield_signup_email,
+                              controller: _emailSignupController,
                               decoration:  InputDecoration(
                                 hintText: 'Email',
                                 labelStyle: const TextStyle(
@@ -211,8 +188,8 @@ class _SignUpState extends State<SignUp> {
                       SizedBox(
                         width: 120,
                         child: TextFormField(
-                                    key: _textformfield_age,
-                                    controller: _ageController,
+                                    key: _textformfield_signup_age,
+                                    controller: _ageSignupController,
                                     keyboardType: TextInputType.number,
                                     decoration:  InputDecoration(
                                       hintText: 'Age',
@@ -252,7 +229,7 @@ class _SignUpState extends State<SignUp> {
                       Flexible(
                         child: DropdownButtonFormField<String>(
                                     value: _initialGender,
-                                    key: _textformfield_gender,
+                                    key: _textformfield_signup_gender,
                                     dropdownColor: const Color.fromARGB(255 ,221,223,245),
                                     isExpanded: true,
                                     items: genders.map(buildMenuItem).toList(),
@@ -299,8 +276,8 @@ class _SignUpState extends State<SignUp> {
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
-                              key: _textformfield_password,
-                              controller: _passwordController,
+                              key: _textformfield_signup_password,
+                              controller: _passwordSignupController,
                               decoration:  InputDecoration(
                                 hintText: 'Password',
                                 labelStyle: const TextStyle(
@@ -354,20 +331,35 @@ class _SignUpState extends State<SignUp> {
                               textColor: Colors.white,
                               color: const Color.fromRGBO(48,52,68, 1),
                               onPressed:  () async {
-                                setState(() {
-                                  _isProcessing = true;//currently processing the registration of acct
-                                });
-                                _trySubmit(context); 
-                                setState(() {
-                                  _isProcessing = false;//done processing
-                                });
+                                String _connectionerror = '';
+                                try {
+                                  final result = await InternetAddress.lookup('example.com');
+                                  if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                                    setState(() {
+                                      _isProcessing = true;//currently processing the registration of acct
+                                    });
+                                    _trySubmit(context); 
+                                    setState(() {
+                                      _isProcessing = false;//done processing
+                                    });
+                                  }
+                                } on SocketException catch (_) {
+                                  _connectionerror = 'Connection Error: Please connect your device to the internet';
+                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_connectionerror), backgroundColor: Colors.red,));
+                                }
                               }
-                              
                             ),
                   const SizedBox(height: 10),
                   AlreadyHaveAnAccountCheck(
                     login: false,
-                    press: () {Navigator.push(context, MaterialPageRoute(builder: (context) {return Login();}));})
+                    press: () {Navigator
+                      .push(context, 
+                        MaterialPageRoute(builder: (context) {return Login();}
+                        )
+                      );
+                    },
+                    screenFormKey: _formKey2,
+                  )
                 ] 
               )
             )
