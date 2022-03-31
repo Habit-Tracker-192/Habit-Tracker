@@ -12,11 +12,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) => DefaultTabController (
       length: 3,
       child: Scaffold(
-
           appBar:
           (PreferredSize(
             preferredSize: Size.fromHeight(202.0),
-
             child: AppBar(
               flexibleSpace: Container(
                 decoration: const BoxDecoration(
@@ -27,11 +25,11 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
 
-                child: new Container(
+                child: Container(
                   margin: EdgeInsets.all(2),
                   padding: EdgeInsets.fromLTRB(1.0, 100.0, .0, 110.0),
                   width: 500,
-                  child: new Text('FRIDAY, APRIL 1',
+                  child: const Text('FRIDAY, APRIL 1',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontFamily: 'Poppins',
@@ -44,22 +42,17 @@ class _HomePageState extends State<HomePage> {
 
                 ),
                 ),
-
-
-
               backgroundColor: Color.fromARGB(255, 154, 153, 238),
               title: Container(
                 child: IconButton(
                   alignment: Alignment.topRight,
-                  padding: EdgeInsets.fromLTRB(350, 0, 0, 0),
+                  padding: EdgeInsets.fromLTRB(350, 15, 0, 0),
                   icon: Icon(Icons.search_rounded, size: 30.0),
 
                   onPressed: (){},
-
                 ),
               ),
-
-              bottom: TabBar(
+              bottom: const TabBar(
                 padding: EdgeInsets.fromLTRB(0,0,5,0),
                 isScrollable: true,
                 labelStyle: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
@@ -109,11 +102,11 @@ class _RecentState extends State<Recent> {
               child: Container(
                   width: MediaQuery.of(context).size.width,
                   //padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: const Color.fromRGBO(255, 255, 255, .5),
+                        color:  Color.fromRGBO(255, 255, 255, .5),
                       ),
                     ],
                   ),
@@ -123,10 +116,13 @@ class _RecentState extends State<Recent> {
                                 //strokeWidth: 10,
                                 lineWidth: 10,
 
-                                center: Text(goal[index], style: TextStyle(color:
-                                Color.fromARGB(255, 72, 68, 80), fontSize:
-                                    16.0, fontFamily: 'Poppins', fontWeight: FontWeight.bold, letterSpacing: 1.0), textAlign: TextAlign.justify,),
-
+                                center: Text(goal[index], style: const TextStyle(color:
+                                  Color.fromARGB(255, 72, 68, 80), 
+                                  fontSize:16.0, 
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.bold, 
+                                  letterSpacing: 1.0), 
+                                textAlign: TextAlign.justify,),
                                 circularStrokeCap: CircularStrokeCap.round,
                                 percent: progress[index]/total[index],
                                 progressColor: Color.fromARGB(255, 111, 104, 207),
