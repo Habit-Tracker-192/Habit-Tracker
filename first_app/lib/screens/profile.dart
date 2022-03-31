@@ -154,7 +154,7 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
             itemBuilder: (BuildContext context, int index) =>   
             Container( //return gesturedetector child: container
                 width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.0),
+                padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 2.0),
                 child: Card(
                   elevation: 5.0,
                   shape: RoundedRectangleBorder(
@@ -162,7 +162,7 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
                   ),
                   child: Container(
                     width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                    padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,7 +262,7 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
             child: Text('    Categories', style: TextStyle(fontSize: 20, fontFamily: 'Poppins'))
           ),
           Container(    //CATEGORY LISTVIEW
-            height: 110,
+            height: 60,
             child: ListView.builder(
               itemCount: 1,
               itemBuilder: (BuildContext ctx, int index){
@@ -274,7 +274,7 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
                       builder: (BuildContext context) => categDetail()),
                   );
                 },
-                child:    
+                child:
                 Container(
                   margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                   height: 175,
@@ -283,7 +283,7 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
                       Positioned.fill(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(15),
-                          child: Image.asset('assets/images/Education.png', 
+                          child: Image.asset('assets/images/Education.png',
                             fit: BoxFit.cover
                           )
                         )
@@ -302,17 +302,17 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
                                 children: [
                                   Text(category[index], style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
                                     fontSize: 18, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.3)),                            
+                                    letterSpacing: 1.3)),
                                   Center(child:
                                     SizedBox(width: 110)
                                   ),
-                                  Text(((categProgress[index]/categTotal[index])*100).toInt().toString() 
+                                  Text(((categProgress[index]/categTotal[index])*100).toInt().toString()
                                       + '% completed', style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
                                       fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
                                       letterSpacing: 1.3)),
                                 ],
                               ),
-                              
+
                               Padding(
                                 padding: EdgeInsets.fromLTRB(0,7,0,0),
                                 child: LinearPercentIndicator(  //Category Linear Percent Indicator
@@ -384,7 +384,7 @@ class _FriendsState extends State<Friends> {
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index) => Container(
                 width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.0),
+                padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 2.0),
                 child: Card(
                   elevation: 5.0,
                   shape: RoundedRectangleBorder(
@@ -392,7 +392,7 @@ class _FriendsState extends State<Friends> {
                   ),
                   child: Container(
                     width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                    padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
