@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class FireAuth {
+  
   //register user
   static Future<User?> registerUsingEmailPassword({
     required String name,
@@ -11,10 +12,33 @@ class FireAuth {
     required String gender,
     required String password,
     required BuildContext context,
+
   }) async {
     FirebaseAuth auth = FirebaseAuth.instance; //initializes instance of user database
     User? user;
     String message = '';
+
+    Widget _buildPopupDialogSignup(BuildContext context) {
+      return AlertDialog(
+        title: const Text('Congrats! Your account has been created'),
+        content:  Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const <Widget>[
+            Text("Please login using your credentials back at the Login Page"),
+          ],
+        ),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            textColor: Theme.of(context).primaryColor,
+            child: const Text('Close'),
+          ),
+        ],
+      );
+      }
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
         email: email,
@@ -25,6 +49,10 @@ class FireAuth {
       await user.reload();
       user = auth.currentUser;
       print('User created');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => _buildPopupDialogSignup(context),
+      );
       // user?.sendEmailVerification();
     } on FirebaseAuthException catch (e) {//register errors
       if (e.code == 'weak-password') {
