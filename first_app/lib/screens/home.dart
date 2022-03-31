@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage> {
               title: Container(
                 child: IconButton(
                   alignment: Alignment.topRight,
-                  padding: EdgeInsets.fromLTRB(350, 15, 0, 0),
+                  padding: EdgeInsets.fromLTRB(350, 0, 0, 0),
                   icon: Icon(Icons.search_rounded, size: 30.0),
 
                   onPressed: (){},
