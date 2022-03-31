@@ -31,7 +31,7 @@ class categDetail extends StatelessWidget {
               
               IconButton(
                 alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(310, 0, 20, 0),
+                padding: EdgeInsets.fromLTRB(310, 0, 0, 20),
                 icon: Icon(Icons.search_rounded, size: 30.0),
 
                 onPressed: (){},
@@ -59,7 +59,7 @@ class categDetail extends StatelessWidget {
             itemBuilder: (BuildContext context, int index) =>   
             Container( //return gesturedetector child: container
                 width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.0),
+                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
                 child: Card(
                   elevation: 5.0,
                   shape: RoundedRectangleBorder(
@@ -67,7 +67,7 @@ class categDetail extends StatelessWidget {
                   ),
                   child: Container(
                     width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                    padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
