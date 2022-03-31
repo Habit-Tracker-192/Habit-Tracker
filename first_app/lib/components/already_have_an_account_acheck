@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 class AlreadyHaveAnAccountCheck extends StatelessWidget {
   final bool login;
   final VoidCallback press;
+  final GlobalKey<FormState> screenFormKey;
 
   const AlreadyHaveAnAccountCheck({
-    Key? key, this.login = true, required this.press,
+    Key? key, this.login = true, required this.press, required this.screenFormKey,
   }) : super(key: key);
 
   @override
@@ -20,7 +21,10 @@ class AlreadyHaveAnAccountCheck extends StatelessWidget {
         ),
 
         GestureDetector(
-          onTap: press,
+          onTap: () {
+            screenFormKey.currentState?.reset();
+            press();
+          },
           child: 
             Text(
               login ? "Sign Up" : "Sign In",
