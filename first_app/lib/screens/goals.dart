@@ -94,7 +94,7 @@ class _RecentState extends State<Recent> {  //RECENT TAB
             itemBuilder: (BuildContext context, int index) =>   
             Container( //return gesturedetector child: container
                 width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.0),
+                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
                 child: Card(
                   elevation: 5.0,
                   shape: RoundedRectangleBorder(
@@ -197,13 +197,13 @@ class _RecentState extends State<Recent> {  //RECENT TAB
             ),
           ),
           Container( //CATEGORY TEXT
-            height: 30,
+            height: 70,
             alignment: Alignment.centerLeft,
             child: Text('    Categories', style: TextStyle(fontSize: 20, fontFamily: 'Poppins'))
           ),
 
           Container(    //CATEGORY LISTVIEW
-            height: 250,
+            height: 150,
             child: ListView.builder(
               itemCount: 1,
               itemBuilder: (BuildContext ctx, int index){
@@ -217,7 +217,7 @@ class _RecentState extends State<Recent> {  //RECENT TAB
                 },
                 child:    
                 Container(
-                  margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
                   height: 175,
                   child: Stack(
                     children: [
@@ -317,7 +317,7 @@ class _InProgressState extends State<InProgress> {
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int index) => Container(
             width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.0),
+            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
             child: Card(
               elevation: 5.0,
               shape: RoundedRectangleBorder(
@@ -442,7 +442,7 @@ class _CompletedState extends State<Completed> {
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int index) => Container(
             width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.0),
+            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
             child: Card(
               elevation: 5.0,
               shape: RoundedRectangleBorder(
@@ -567,7 +567,7 @@ class _AllState extends State<All> {
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int index) => Container(
             width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.0),
+            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
             child: Card(
               elevation: 5.0,
               shape: RoundedRectangleBorder(
@@ -575,7 +575,7 @@ class _AllState extends State<All> {
               ),
               child: Container(
                 width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -599,7 +599,7 @@ class _AllState extends State<All> {
                                 
                                 IconButton(
                                   alignment: Alignment.centerRight,
-                                  padding: EdgeInsets.only(left:90),
+                                  padding: EdgeInsets.only(left:70),
                                   icon: Icon(Icons.edit, size: 15.0),
 
                                   onPressed: (){},
