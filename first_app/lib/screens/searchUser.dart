@@ -116,16 +116,17 @@ class _SearchUserState extends State<SearchUser> {
                 map?['username'] == _search?.text ?
                 ListTile(
                   onTap: (){},
-                  leading: Icon(Icons.account_box, color: Colors.black),
+                  leading: Icon(Icons.account_circle_rounded, color: Color.fromRGBO(100, 88, 204, .9), 
+                  size: 45,),
                   title: Text(map?['username'],
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 17,
+                    fontSize: 20,
                     fontWeight: FontWeight.w500,
                   ),
                   ),
                   subtitle: Text(map?['email']),
-                  trailing: Icon(Icons.chat, color: Colors.black),
+                  //trailing: Icon(Icons.chat, color: Colors.black),
 
                 )
                   :Container()
