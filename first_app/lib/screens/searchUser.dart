@@ -52,7 +52,8 @@ class _SearchUserState extends State<SearchUser> {
     } else{
       setState(() {
         text = "User is not found for that specific ID: #${_search?.text}";
-        map == null;
+        map?[0] == _search?.text;
+        //map == null;
         print(text);
       });
     }
@@ -132,9 +133,9 @@ class _SearchUserState extends State<SearchUser> {
                   :Container()
                 )
                 : Container(),
-
-                map != null ?    
+  
                 Expanded(child: map?['username'] != _search?.text ?
+                _search!.text.isNotEmpty ?
                 ListTile(
                   onTap: (){},
           
@@ -147,8 +148,10 @@ class _SearchUserState extends State<SearchUser> {
                   ),
 
                 )
-                :Container())
+                :Container()
                 : Container(),
+                )
+                
                   ],
             ),
 
@@ -159,7 +162,6 @@ class _SearchUserState extends State<SearchUser> {
   );
 
 }
-
 
 
 
