@@ -65,7 +65,7 @@ class _SearchUserState extends State<SearchUser> {
       length: 2,
       child: Scaffold(
           appBar: (PreferredSize(
-            preferredSize: Size.fromHeight(85.0),
+            preferredSize: Size.fromHeight(60.0),
             child: AppBar(
               backgroundColor: Color.fromARGB(255, 154, 153, 238),
               //backgroundColor: Color.fromARGB(255, 231, 231, 241),
