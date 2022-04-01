@@ -17,7 +17,7 @@ class SearchUser extends StatefulWidget {
 
 class _SearchUserState extends State<SearchUser> {
   String text = "Search for User Detail";
-  Map<String, dynamic> ?userMap;
+  Map? map;
   bool isLoading = false;
 
   final TextEditingController? _search = TextEditingController();
@@ -27,28 +27,32 @@ class _SearchUserState extends State<SearchUser> {
 
       FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-      setState(() {
-        isLoading = true;
-      });
+      // setState(() {
+      //   isLoading = true;
+      // });
 
       await _firestore
           .collection('UserData')
           .where("username", isEqualTo: _search?.text)
           .get()
           .then((value) {
-            setState(() {
-              userMap = value.docs[0].data();
-              isLoading = false;
+            for (var i in value.docs){
+              setState(() {
+              map = i.data();
+              //isLoading = false;
             });    
-            print(userMap);    
+            print(map); 
+            }
+               
           });
     }
     
-    if(userMap?['username'] == _search?.text){
+    if(map?['username'] == _search?.text){
       
     } else{
       setState(() {
-        text = 'User not found';
+        text = "User is not found for that specific ID: #${_search?.text}";
+        map == null;
         print(text);
       });
     }
@@ -105,32 +109,60 @@ class _SearchUserState extends State<SearchUser> {
           )),
           body:
           SafeArea(
-            
-            child: userMap != null ?    
-            Expanded(child: ListTile(
-              onTap: (){},
-              leading: Icon(Icons.account_box, color: Colors.black),
-              title: Text(userMap?['username'],
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 17,
-                fontWeight: FontWeight.w500,
-              ),
-              ),
-              subtitle: Text(userMap?['email']),
-              trailing: Icon(Icons.chat, color: Colors.black),
+            child: Column(
+              children: [
+                map != null ?    
+                Expanded(child: 
+                map?['username'] == _search?.text ?
+                ListTile(
+                  onTap: (){},
+                  leading: Icon(Icons.account_box, color: Colors.black),
+                  title: Text(map?['username'],
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  ),
+                  subtitle: Text(map?['email']),
+                  trailing: Icon(Icons.chat, color: Colors.black),
 
+                )
+                  :Container()
+                )
+                : Container(),
+
+                map != null ?    
+                Expanded(child: map?['username'] != _search?.text ?
+                ListTile(
+                  onTap: (){},
+          
+                  title: Text("              User #${_search?.text} not found.",
+                  style: TextStyle(                   
+                    color: Color.fromARGB(255, 33, 33, 34),
+                    fontSize: 17,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  ),
+
+                )
+                :Container())
+                : Container(),
+                  ],
+            ),
+
+            
             )
-            ): Container(),)
            
-          // body: TabBarView(
-          //   children: [
-          //     Recent()
-          //     //Completed(),
-          //     //All(),
-          //   ],)
       )
   );
 
 }
+
+
+
+
+
+
+
 
