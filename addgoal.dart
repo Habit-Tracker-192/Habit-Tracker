@@ -156,7 +156,7 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                     color:Colors.white,
                     borderRadius: BorderRadius.all(Radius.circular(25.0))
                   ),
-                  height: 570.0,
+                  height: 550.0,
                   alignment: Alignment.topCenter,
                   padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
                   width: 360,
