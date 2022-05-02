@@ -1,4 +1,7 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:first_app/components/goal_card.dart';
+import 'package:first_app/models/goalList.dart';
 import 'package:first_app/services/authenticate.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -10,11 +13,13 @@ class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
 
 
+
   @override
   _ProfileState createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
+  
 
   final FireAuth auth = FireAuth();
 
@@ -70,14 +75,14 @@ class _ProfileState extends State<Profile> {
               const SizedBox(
                 height:170,
                 width: 170,
-                child: CircleAvatar(backgroundImage: AssetImage('assets/images/profileImage.png'))
+                child: CircleAvatar(backgroundImage: AssetImage('assets/images/default_profile.png'))
               ),
 
               const SizedBox(//for spacing purposes
                 height: 5,
               ),
 
-              const Text('John Caleb Bunye',
+              const Text('Louise Denise Bacani',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 17,
@@ -86,7 +91,7 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
 
-              const Text('@calebbunye',
+              const Text('@dencute',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.white,
@@ -145,13 +150,29 @@ class MyProfile extends StatefulWidget {
 }
 
 class _MyProfileState extends State<MyProfile> {  //RECENT TAB
-  List goal = ["Exercise", "Read Books", "Journaling"];
-  List goalcategory = ["Health", "Recreation", "Recreation"];
-  List progress = [35, 54, 20];
-  List total = [50, 90, 20];
-  List category = ["Education", "Health"];
-  List categProgress = [200, 150];
-  List categTotal = [250, 200];
+  List<Object> _goals = [];
+
+  @override
+  void didChangeDependencies(){
+    super.didChangeDependencies();
+    getGoalList();
+  }
+
+
+  Future getGoalList() async {
+    final uid = FireAuth().currentUser?.uid;
+
+    var data = await FirebaseFirestore.instance
+      .collection('UserData')
+      .doc(uid)
+      .collection('goals')
+      .orderBy('lastlog', descending: true)
+      .limit(4)
+      .get();
+    setState(() {
+      _goals = List.from(data.docs.map((doc)=> GoalEntity.fromSnapshot(doc)));
+    });
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -160,7 +181,6 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
         children: [
           SizedBox(height: 5),
           Container( //RECENT LOG TEXT
-            //padding: EdgeInsets.fromLTRB(0,0,0,0),
             height: 45,
             alignment: Alignment.centerLeft,
             child: Text('    Recent Log', style: TextStyle(fontSize: 20, fontFamily: 'Poppins'))
@@ -169,203 +189,11 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
             height: 280,
             child: ListView.builder(
             padding: EdgeInsets.fromLTRB(0,5,0,0),
-            itemCount: goal.length,
+            itemCount: _goals.length,
             shrinkWrap: true,
-            itemBuilder: (BuildContext context, int index) =>   
-            Container( //return gesturedetector child: container
-                width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.0),
-                child: Card(
-                  elevation: 5.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25.0),
-                  ),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            SizedBox(width: 5.0),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-
-                                Row(
-                                  //crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(goal[index], style: TextStyle(color: 
-                                      Color.fromARGB(255, 72, 68, 80), fontSize: 
-                                      18.0, fontWeight: FontWeight.bold, fontFamily: 'Poppins',
-                                      letterSpacing: 1.1),),
-                                    
-                                    IconButton(
-                                      alignment: Alignment.centerRight,
-                                      padding: EdgeInsets.only(left:125),
-                                      icon: Icon(Icons.edit, size: 15.0),
-
-                                      onPressed: (){},
-                                    ),  
-                                    IconButton(
-                                      alignment: Alignment.centerRight,
-                                      padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
-                                      icon: Icon(Icons.clear_rounded, size: 15.0),
-
-                                      onPressed: (){},
-                                    ),    
-                                ],),
-                            
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(0,0,0,7),
-                                      child: Text(goalcategory[index], style: TextStyle(color: 
-                                      Color.fromARGB(255, 94, 93, 189), fontStyle: FontStyle.italic,
-                                        fontFamily: 'Poppins', fontWeight: FontWeight.bold, 
-                                        fontSize: 13.0, letterSpacing: 1.0)),
-                                    ),
-                                    
-                                    Center(child:
-                                      SizedBox(width: 190)
-                                    ),
-                                    
-                                    Text(((progress[index]/total[index])*100).toInt().toString() 
-                                        + '%', style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
-                                        fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
-                                        letterSpacing: 1.3)),
-                                  ],
-                                ),
-
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(0,0,0,10),
-                                  child: LinearPercentIndicator( //Recent Goal linear percent bar
-                                    width: 310,
-                                    animation: true,
-                                    lineHeight: 15,
-                                    center: Row(
-                                      
-                                      children: [
-                                        Text(progress[index].toString(), style: TextStyle(fontSize: 12, color:
-                                        Color.fromARGB(255, 228, 223, 238))),
-                                        Center(child:
-                                          SizedBox(width: 230)
-                                        ),
-                                        Text(total[index].toString(), style: TextStyle(fontSize: 12, color:
-                                        Color.fromARGB(255, 143, 141, 150))),
-                                      ],
-                                    ),
-                                    linearStrokeCap: LinearStrokeCap.roundAll,
-                                    percent: progress[index]/total[index],
-                                    progressColor: Color.fromARGB(255, 104, 106, 207),
-                                    backgroundColor: Color.fromARGB(255, 228, 223, 238),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ],
-                        )
-                      ],
-                    )
-                  ),
-                )
-              )
+            itemBuilder: (BuildContext context, int index) => GoalCard(_goals[index] as GoalEntity) 
             ),
           ),
-          // Container( //CATEGORY TEXT
-          //   height: 27,
-          //   alignment: Alignment.centerLeft,
-          //   child: Text('    Categories', style: TextStyle(fontSize: 20, fontFamily: 'Poppins'))
-          // ),
-          // Container(    //CATEGORY LISTVIEW
-          //   height: 110,
-          //   child: ListView.builder(
-          //     itemCount: 1,
-          //     itemBuilder: (BuildContext ctx, int index){
-          //       return GestureDetector(
-          //       onTap: () {
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //             builder: (BuildContext context) => categDetail()),
-          //         );
-          //       },
-          //       child:    
-          //       Container(
-          //         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-          //         height: 175,
-          //         child: Stack(
-          //           children: [
-          //             Positioned.fill(
-          //               child: ClipRRect(
-          //                 borderRadius: BorderRadius.circular(15),
-          //                 child: Image.asset('assets/images/Education.png', 
-          //                   fit: BoxFit.cover
-          //                 )
-          //               )
-          //             ),
-          //             Positioned(
-          //               bottom: 6,
-          //               left: 30,
-          //               child: Padding(
-          //                 padding: const EdgeInsets.all(10.0),
-          //                 child: Column(
-          //                   crossAxisAlignment: CrossAxisAlignment.start,
-          //                   children: [
-          //                     SizedBox(width: 10),
-
-          //                     Row(
-          //                       children: [
-          //                         Text(category[index], style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
-          //                           fontSize: 18, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
-          //                           letterSpacing: 1.3)),                            
-          //                         Center(child:
-          //                           SizedBox(width: 110)
-          //                         ),
-          //                         Text(((categProgress[index]/categTotal[index])*100).toInt().toString() 
-          //                             + '% completed', style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
-          //                             fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
-          //                             letterSpacing: 1.3)),
-          //                       ],
-          //                     ),
-                              
-          //                     Padding(
-          //                       padding: EdgeInsets.fromLTRB(0,7,0,0),
-          //                       child: LinearPercentIndicator(  //Category Linear Percent Indicator
-          //                         width: 330,
-          //                         animation: true,
-          //                         lineHeight: 16,
-          //                         center: Row(
-          //                           children: [
-          //                             Text(categProgress[index].toString(), style: TextStyle(fontSize: 12, color:
-          //                             Color.fromARGB(255, 228, 223, 238))),
-          //                             Center(child:
-          //                               SizedBox(width: 255)
-          //                             ),
-          //                             Text(categTotal[index].toString(), style: TextStyle(fontSize: 12, color:
-          //                             Color.fromARGB(255, 143, 141, 150))),
-          //                           ],
-          //                         ),
-          //                         linearStrokeCap: LinearStrokeCap.roundAll,
-          //                         percent: categProgress[index]/categTotal[index],
-          //                         progressColor: Color.fromARGB(255, 61, 68, 95),
-          //                         backgroundColor: Color.fromARGB(255, 228, 223, 238),
-          //                       ),
-          //                     )
-          //                   ],
-          //                 ),
-          //               )
-          //             )
-          //           ],
-          //         )
-          //       ));
-          //     },
-          //   )
-          // )
       ])
     )
   );
