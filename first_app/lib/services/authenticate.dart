@@ -1,9 +1,13 @@
-//SERVICES INCLUDE LOGGIN IN, SIGNING UP, REFRESHING USER
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FireAuth {
+
+  FirebaseAuth auth = FirebaseAuth.instance; //initializes instance of user database
+  
+  User? get currentUser => auth.currentUser;
+  
   
   //register user
   static Future<User?> registerUsingEmailPassword({
