@@ -1,13 +1,47 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_key_in_widget_constructors, camel_case_types
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:first_app/components/categGoal_card.dart';
+import 'package:first_app/components/categ_card.dart';
+import 'package:first_app/components/goal_card.dart';
+import 'package:first_app/models/categGoalList.dart';
+import 'package:first_app/models/categList.dart';
+import 'package:first_app/models/goalList.dart';
+import 'package:first_app/services/authenticate.dart';
+import 'package:flutter/foundation.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:flutter/material.dart';
 
-class categDetail extends StatelessWidget {
 
-  List goal = ["Watch CS 21 Lectures", "Study CS 191", "Take / Fix Notes"];
-  List goalcategory = ["Education", "Education", "Education"];
-  List progress = [54, 35, 15];
-  List total = [90, 50, 20];
+class categDetail extends StatefulWidget {
+  _categDetailState createState() => _categDetailState();
+}
+
+class _categDetailState extends State<categDetail> { 
+  
+  //CategoryCard(this._category);
+  List<Object> _categGoals = [];
+
+  @override
+  void didChangeDependencies(){
+    super.didChangeDependencies();
+    getCategGoalList();
+  }
+
+  Future getCategGoalList() async {
+    final uid = FireAuth().currentUser?.uid;
+    var data = await FirebaseFirestore.instance
+      .collection('UserData')
+      .doc(uid)
+      .collection('categories')
+      .doc('Education')
+      .collection('goals')
+      .where("goalcategory", isEqualTo: 'Education')
+      .get();
+      
+    setState(() {
+      _categGoals = List.from(data.docs.map((doc)=> CategGoalEntity.fromSnapshot(doc)));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,125 +74,24 @@ class categDetail extends StatelessWidget {
           Container( //CATEGORY TEXT
             height: 30,
             alignment: Alignment.centerLeft,
-            child: Text('     '+ goalcategory[0], style: TextStyle(fontSize: 20, fontFamily: 'Poppins',
+            child: Text('     '+ 'Education', style: TextStyle(fontSize: 20, fontFamily: 'Poppins',
             fontWeight: FontWeight.bold, color: Color.fromARGB(255, 72, 68, 80)))
           ),
 
           Container( //CATEGORY TEXT
             height: 30,
             alignment: Alignment.centerLeft,
-            child: Text('     Target hours: 160h', style: TextStyle(fontSize: 18, fontFamily: 'Poppins',
+            child: Text('     Target hours: 70h', style: TextStyle(fontSize: 18, fontFamily: 'Poppins',
             color: Color.fromARGB(255, 94, 93, 189), fontStyle: FontStyle.italic))
           ),
+
           Container(  //RECENT GOALS LISTVIEW
-            height: 600,
+            height: 300,
             child: ListView.builder(
             padding: EdgeInsets.fromLTRB(0,20,0,0),
-            itemCount: goal.length,
+            itemCount: _categGoals.length,
             shrinkWrap: true,
-            itemBuilder: (BuildContext context, int index) =>   
-            Container( //return gesturedetector child: container
-                width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
-                child: Card(
-                  elevation: 5.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25.0),
-                  ),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            SizedBox(width: 5.0),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-
-                                Row(
-                                  //crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(goal[index], style: TextStyle(color: 
-                                      Color.fromARGB(255, 72, 68, 80), fontSize: 
-                                      18.0, fontWeight: FontWeight.bold, fontFamily: 'Poppins',
-                                      letterSpacing: 1.1),),
-                                    
-                                    IconButton(
-                                      alignment: Alignment.centerRight,
-                                      padding: EdgeInsets.only(left:40),
-                                      icon: Icon(Icons.edit, size: 15.0),
-
-                                      onPressed: (){},
-                                    ),  
-                                    IconButton(
-                                      alignment: Alignment.centerRight,
-                                      padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
-                                      icon: Icon(Icons.clear_rounded, size: 15.0),
-
-                                      onPressed: (){},
-                                    ),    
-                                ],),
-                            
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(0,0,0,7),
-                                      child: Text(goalcategory[index], style: TextStyle(color: 
-                                      Color.fromARGB(255, 94, 93, 189), fontStyle: FontStyle.italic,
-                                        fontFamily: 'Poppins', fontWeight: FontWeight.bold, 
-                                        fontSize: 13.0, letterSpacing: 1.0)),
-                                    ),
-                                    
-                                    Center(child:
-                                      SizedBox(width: 210)
-                                    ),
-                                    
-                                    Text(((progress[index]/total[index])*100).toInt().toString() 
-                                        + '%', style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
-                                        fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
-                                        letterSpacing: 1.3)),
-                                  ],
-                                ),
-
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(0,0,0,10),
-                                  child: LinearPercentIndicator( //Recent Goal linear percent bar
-                                    width: 320,
-                                    animation: true,
-                                    lineHeight: 15,
-                                    center: Row(
-                                      
-                                      children: [
-                                        Text(progress[index].toString(), style: TextStyle(fontSize: 12, color:
-                                        Color.fromARGB(255, 228, 223, 238))),
-                                        Center(child:
-                                          SizedBox(width: 250)
-                                        ),
-                                        Text(total[index].toString(), style: TextStyle(fontSize: 12, color:
-                                        Color.fromARGB(255, 143, 141, 150))),
-                                      ],
-                                    ),
-                                    linearStrokeCap: LinearStrokeCap.roundAll,
-                                    percent: progress[index]/total[index],
-                                    progressColor: Color.fromARGB(255, 104, 106, 207),
-                                    backgroundColor: Color.fromARGB(255, 228, 223, 238),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ],
-                        )
-                      ],
-                    )
-                  ),
-                )
-              )
+            itemBuilder: (BuildContext context, int index) =>  CategGoalCard(_categGoals[index] as CategGoalEntity) 
             ),
           ),
         ]),
