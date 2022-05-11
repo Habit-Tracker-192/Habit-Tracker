@@ -53,14 +53,16 @@ class FireAuth {
       
       await _firestore.collection('UserData').doc(userCredential.user?.uid).set(  //added
       {"username":name, 
-      "email": email
+      "email": email,
+      "age": age,
+      "gender": gender,
       });     
       
       user = userCredential.user;
       await user!.updateDisplayName(name);
       await user.reload();
       user = auth.currentUser;
-      print('User created');
+      // print('User created');
       showDialog(
         context: context,
         builder: (BuildContext context) => _buildPopupDialogSignup(context),
