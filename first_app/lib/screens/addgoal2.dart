@@ -6,10 +6,12 @@ import 'package:first_app/models/goalList.dart';
 import 'package:first_app/services/authenticate.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
+
+import '../models/categList.dart';
 //import 'package:first_app/widgets/provider_widget.dart';
 
 class AddGoal extends StatefulWidget {
-  
+
 
   //const AddGoal({Key? key}) : super(key: key);
 
@@ -53,6 +55,7 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
   void didChangeDependencies(){
     super.didChangeDependencies();
     getGoalList();
+    getCategoryList();
   }
 
   List<Object> _goals = [];
@@ -70,7 +73,48 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
     });
   }
 
-  
+  List<Object> _categories = [];
+  Future getCategoryList() async {
+
+    final uid = FireAuth().currentUser?.uid;
+
+    var data = await FirebaseFirestore.instance
+      .collection('UserData')
+      .doc(uid)
+      .collection('categories')
+      .orderBy('category')
+      //.limit(1)
+      .get();
+    setState(() {
+      _categories = List.from(data.docs.map((doc)=> CategoryEntity.fromSnapshot(doc)));
+    });
+  }
+
+  bool _exist = false;
+  Future doesCategoryAlreadyExist(String category) async {
+    final uid = FireAuth().currentUser?.uid;
+
+    final QuerySnapshot result = await FirebaseFirestore.instance
+    .collection('UserData')
+    .doc(uid)
+    .collection('categories')
+    .where('category', isEqualTo: category)
+    .limit(1)
+    .get();
+
+    setState(() {
+      _exist = result.docs.isNotEmpty;
+    });
+  }
+
+  bool _categoryExist = false;
+  checkCategoryValue<bool>(String user) {//1 if exists
+    doesCategoryAlreadyExist(user).then((val){
+      _categoryExist = val;
+    });
+    return _categoryExist;
+  }
+
   TextEditingController _timesController = TextEditingController(); //text:1.toString()
   TextEditingController _durationController = TextEditingController(); //text:1.toString()
   TextEditingController _goalNameController = TextEditingController();
@@ -81,7 +125,7 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
   TextEditingController _categoryDescriptionController = TextEditingController();
   TextEditingController _coverController = TextEditingController();
 
-  
+
   String frequency = 'Daily';
 
   var _textformfield_times = GlobalKey<FormFieldState>();
@@ -100,6 +144,7 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
   final _formKey4 = GlobalKey<FormState>();
   int progress = 0;
   int total = 100;
+  // List<int> freq = [1,7,3];
 
   Widget _buildPopupDialogGoal(BuildContext context) {
   return AlertDialog(
@@ -149,7 +194,7 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
 
   @override
   Widget build(BuildContext context) {
-    
+
     DropdownMenuItem<String> buildMenuItem(String some) => DropdownMenuItem(
         value: some,
         child: Text(
@@ -230,7 +275,7 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                   //alignment: Alignment.topCenter,
                   padding: EdgeInsets.fromLTRB(0,0,0,40),
                   child:  TabBarView(
-                    
+
                     controller: _controller,
                     children:  <Widget>[
                       Card(
@@ -240,7 +285,7 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                             shrinkWrap: true,
                             padding: EdgeInsets.fromLTRB(0,30,0,0),
                             physics: const AlwaysScrollableScrollPhysics(),
-                            
+
                             children: [
                               TextFormField(
                                 key: _textformfield_categoryName,
@@ -270,15 +315,15 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                                 ),
                                 textInputAction: TextInputAction.done,
                                 validator: (value){
-                                  if (category.contains(value)){
-                                    return 'Category Name already exists!';
-                                  }
-                                  else if (value!.isNotEmpty && value.length <= 14 ){
-                                    return null;
-                                  }
-                                  else if (value.isEmpty){
+                                  if (value!.isEmpty){
                                     return 'Please add a category name';
                                   } 
+                                  else if (_exist){
+                                    return 'Category already exists';
+                                  } 
+                                  else if (value.isNotEmpty && value.length <= 14 ){
+                                    return null;
+                                  }
                                   else {
                                     return 'Category Name is too long!';
                                   }
@@ -323,7 +368,7 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                                   }
                                 },
                               ),
-                                              
+
                               SizedBox(height: 10),
                               TextFormField(
                                 key: _textformfield_cover,
@@ -397,19 +442,24 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                               MaterialButton(
                                 minWidth: 40,
                                 onPressed: () async {
+                                  await doesCategoryAlreadyExist(_categoryNameController.text);
                                   if (_formKey3.currentState!.validate()) {
                                     category.add(_categoryNameController.text);
                                     final uid = FireAuth().currentUser?.uid;
                                     var categoryID = _categoryNameController.text;
-                                     
-                                    await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(categoryID).set({'category': _categoryNameController.text,  'categProgress': progress,
-                                    'categTotal': total});
-                                      //await getGoalList(); //adsdasd
+
+                                    await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(categoryID).set({
+                                      'category': _categoryNameController.text,
+                                      'categProgress': progress,
+                                      'categTotal': total,
+                                      'categTargetHours': int.parse(_targetHoursController.text),
+                                      'categDesc': _categoryDescriptionController.text
+                                    });
+                                      // await getCategoryList(); //adsdasd
                                     showDialog(
                                        context: context,
                                        builder: (BuildContext context) => _buildPopupDialogCategory(context),
                                     );
-                                    //print(category);
                                   }
                                   else{
                                     return null;
@@ -427,9 +477,9 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                         ),
                       ),
                       Card(
-                        
+
                         child: Form(
-                          
+
                           key: _formKey4,
                           child: ListView(
                             shrinkWrap: true,
@@ -478,13 +528,13 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                                   }
                                 },
                               ),
-                                              
+
                               TextFormField( 
                                 controller: _goalCategoryController,
                                 textInputAction: TextInputAction.done,  
                                 decoration:  InputDecoration(
-                                  
-                                  
+
+
                                   hintText: 'Which one of your Categories does this Goal belong?',
                                   labelText: 'Category',
                                   labelStyle: const TextStyle(
@@ -507,15 +557,26 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                                   fillColor: const Color.fromARGB(255 ,221,223,245),
                                   filled: true,
                                 ),
+                              validator: (value){
+                                  if (value!.isEmpty){
+                                    return 'you must choose a category';
+                                  }
+                                  else if(!_exist){//1 if exists
+                                    return 'category does not exist';
+                                  }
+                                  else{
+                                    return null;
+                                  }
+                                },  
                               ),
-                                              
+
                               DropdownButtonFormField<String>(
-                                value: value,
+                                value: frequency,
                                 key: _textformfield_frequency,
                                 dropdownColor: Color.fromARGB(255 ,221,223,245),
                                 isExpanded: true,
                                 items: frequencies.map(buildMenuItem).toList(),
-                                onChanged: (value) => setState(() => frequency = value!),
+                                onChanged: (newValue) => setState(() => frequency = newValue!),
                                 iconEnabledColor:  const Color.fromRGBO(100, 88, 204, 1),
                                 style: const TextStyle(
                                   color:  Color.fromRGBO(100, 88, 204, 1),
@@ -552,7 +613,7 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                                   }
                                 },
                               ),
-                                              
+
                               TextFormField(
                                 key: _textformfield_times,
                                 controller: _timesController,
@@ -585,25 +646,25 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                                   if (val!.isEmpty){
                                     return 'Please put your desired number of repetition/s';
                                   }
-                                              
+
                                   else if (frequency == 'Daily' && double.tryParse(val)!<= 24 ){
                                     return null;
                                   }
-                                  
+
                                   else if (frequency == 'Weekly' && double.tryParse(val)!<= 6 ){
                                     return null;
                                   }
-                                              
+
                                   else if (frequency == 'Monthly' && double.tryParse(val)!<= 30 ){
                                     return null;
                                   }
-                                              
+
                                   else {
                                     return 'You have exceeded the maximum amount of repetitions';
                                   } 
                                 },
                               ),
-                                              
+
                               TextFormField(
                                 key: _textformfield_duration,
                                 controller: _durationController,
@@ -646,7 +707,7 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                                   }
                                 },
                               ),
-                                              
+
                               TextFormField(
                                 key: _textformfield_goalDescription,
                                 controller: _goalDescriptionController,
@@ -686,25 +747,44 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                                 },
                                 keyboardType: TextInputType.multiline,
                               ),
-                              
+
                               MaterialButton(
                                 minWidth: 40,
                                 onPressed: () async {
+                                  await doesCategoryAlreadyExist(_goalCategoryController.text);
                                   if (_formKey4.currentState!.validate()){
                                      goal.add(_goalNameController.text);
                                      final uid = FireAuth().currentUser?.uid;
                                      var goalID = _goalNameController.text;
+
+                                     //2 items are created one in goal list and one in category list
                                      //CollectionReference collectionReference = FirebaseFirestore.instance.collection('UserData').doc(uid).collection('goals');
-                                     await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('goals').doc(goalID).set({'goal': _goalNameController.text,  'goalcategory': _goalCategoryController.text,
-                                      'percent' : (progress/(int.parse(_timesController.text) * int.parse(_durationController.text)))*100, 'progress' : progress, 'total': int.parse(_timesController.text) * int.parse(_durationController.text)});//(progress / (int.parse(_timesController.text) * int.parse(_durationController.text)))*100, 'total' : (int.parse(_timesController.text) * int.parse(_durationController.text))});
+                                     await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('goals').doc(goalID).set({
+                                      'goal': _goalNameController.text,
+                                      'goalcategory': _goalCategoryController.text,
+                                      'frequency': frequency,
+                                      'total': int.parse(_timesController.text),
+                                      'duration': int.parse(_durationController.text),
+                                      'desc': _goalDescriptionController.text,
+                                      'percent' : (progress/(int.parse(_timesController.text)))*100, 
+                                      'progress' : progress, 
+                                      });//(progress / (int.parse(_timesController.text) * int.parse(_durationController.text)))*100, 'total' : (int.parse(_timesController.text) * int.parse(_durationController.text))});
                                       await getGoalList();
                                       showDialog(
                                        context: context,
                                        builder: (BuildContext context) => _buildPopupDialogGoal(context) ,
-                                     );  
-                                      await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(_categoryNameController.text).collection('goals').doc(goalID).set({'goal': _goalNameController.text,  'goalcategory': _goalCategoryController.text,
-                                      'percent' : (progress/(int.parse(_timesController.text) * int.parse(_durationController.text)))*100, 'progress' : progress, 'total': int.parse(_timesController.text) * int.parse(_durationController.text)});
-                                                                 
+                                      );  
+                                      await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(_categoryNameController.text).collection('goals').doc(goalID).set({
+                                        'goal': _goalNameController.text,  
+                                        'goalcategory': _goalCategoryController.text,
+                                        'frequency': frequency,
+                                        'total': int.parse(_timesController.text),
+                                        'duration': int.parse(_durationController.text),
+                                        'desc': _goalDescriptionController.text,
+                                        'percent' : (progress/(int.parse(_timesController.text)))*100, 
+                                        'progress' : progress, 
+                                      });
+                                      // await getCategoryList();
                                   }
                                   else{}
                                 },  
