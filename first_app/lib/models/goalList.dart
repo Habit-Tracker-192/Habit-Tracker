@@ -3,9 +3,13 @@ import 'dart:ffi';
 class GoalEntity {
   String? goal;
   String? goalcategory; 
+  String? frequency;
+  late num total;//times
+  late num duration;
+  String? desc;
+  
   late num percent;
   late num progress;
-  late num total;
   
 
   GoalEntity();
@@ -17,6 +21,9 @@ class GoalEntity {
       goalcategory = snapshot.data()['goalcategory'],   
       percent = snapshot.data()['percent'], 
       progress = snapshot.data()['progress'],
-      total = snapshot.data()['total']
+      frequency = snapshot.data()['frequency'],
+      total = snapshot.data()['total'],
+      duration = snapshot.data()['duration'],
+      desc = snapshot.data()['desc']
       ;
 }
