@@ -63,7 +63,8 @@ class _GoalCard2State extends State<GoalCard2> {
                           onPressed: () async {
                               setState(() {
                               if (widget._goal.progress < widget._goal.total) {
-                                currentProgress++; widget._goal.progress = widget._goal.progress+1;
+                                currentProgress++; 
+                                widget._goal.progress = widget._goal.progress+1;
                               }
                               else {}});
                               var goalID = widget._goal.goal;
@@ -71,6 +72,11 @@ class _GoalCard2State extends State<GoalCard2> {
                                   'UserData').doc(FireAuth().currentUser?.uid)
                                   .collection('goals').doc(goalID)
                                   .update({'progress': widget._goal.progress, 'lastlog': Timestamp.now()});
+
+                              await FirebaseFirestore.instance.collection(
+                                  'UserData').doc(FireAuth().currentUser?.uid)
+                                  .collection('goals').doc(goalID)
+                                  .update({'percent':(widget._goal.progress/widget._goal.total)*100});
                             }
 
                             ),
