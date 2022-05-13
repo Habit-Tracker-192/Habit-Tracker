@@ -56,9 +56,8 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
     super.didChangeDependencies();
     getGoalList();
     getCategoryList();
-    //getCategoryGoals(category);
   }
-  //List<Object> _categGoals = [];
+
   List<Object> _goals = [];
   Future getGoalList() async {
 
@@ -90,21 +89,6 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
       _categories = List.from(data.docs.map((doc)=> CategoryEntity.fromSnapshot(doc)));
     });
   }
-  // Future getCategoryGoals(category) async {
-
-  //   final uid = FireAuth().currentUser?.uid;
-
-  //   var data = await FirebaseFirestore.instance
-  //     .collection('UserData')
-  //     .doc(uid)
-  //     .collection('categories')
-  //     .where('category', isEqualTo: category)
-  //     .limit(1)
-  //     .get();
-  //   setState(() {
-  //     _categGoals = List.from(data.docs.map((doc)=> CategoryEntity.fromSnapshot(doc)));
-  //   });
-  // }
 
   bool _exist = false;
   Future doesCategoryAlreadyExist(String category) async {
@@ -160,8 +144,6 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
   final _formKey4 = GlobalKey<FormState>();
   int progress = 0;
   int total = 100;
-  bool hasGoal = false;
-  //int goalCount = 0;
   // List<int> freq = [1,7,3];
 
   Widget _buildPopupDialogGoal(BuildContext context) {
@@ -465,17 +447,13 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                                     category.add(_categoryNameController.text);
                                     final uid = FireAuth().currentUser?.uid;
                                     var categoryID = _categoryNameController.text;
-                                    //getCategoryGoals(categoryID);
-                                    //var goalCount = _categGoals[0];
-                                    
+
                                     await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(categoryID).set({
                                       'category': _categoryNameController.text,
                                       'categProgress': progress,
                                       'categTotal': total,
                                       'categTargetHours': int.parse(_targetHoursController.text),
-                                      'categDesc': _categoryDescriptionController.text,
-                                      'hasGoal': hasGoal,
-                                      //'goalCount': goalCount,
+                                      'categDesc': _categoryDescriptionController.text
                                     });
                                       // await getCategoryList(); //adsdasd
                                     showDialog(
@@ -788,25 +766,26 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                                       'total': int.parse(_timesController.text),
                                       'duration': int.parse(_durationController.text),
                                       'desc': _goalDescriptionController.text,
+                                      'lastlog': Timestamp.now(),
                                       'percent' : (progress/(int.parse(_timesController.text)))*100, 
                                       'progress' : progress, 
                                       });//(progress / (int.parse(_timesController.text) * int.parse(_durationController.text)))*100, 'total' : (int.parse(_timesController.text) * int.parse(_durationController.text))});
-                                      await getGoalList();
+                                      // await getGoalList();
                                       showDialog(
                                        context: context,
                                        builder: (BuildContext context) => _buildPopupDialogGoal(context) ,
                                       );  
-                                      await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(_goalCategoryController.text).collection('goals').doc(goalID).set({
+                                      await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(_categoryNameController.text).collection('goals').doc(goalID).set({
                                         'goal': _goalNameController.text,  
                                         'goalcategory': _goalCategoryController.text,
                                         'frequency': frequency,
                                         'total': int.parse(_timesController.text),
                                         'duration': int.parse(_durationController.text),
                                         'desc': _goalDescriptionController.text,
+                                        'lastlog': Timestamp.now(),
                                         'percent' : (progress/(int.parse(_timesController.text)))*100, 
                                         'progress' : progress, 
                                       });
-                                      await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(_goalCategoryController.text).update({'hasGoal': true});
                                       // await getCategoryList();
                                   }
                                   else{}
