@@ -1,11 +1,13 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors
 
 import 'package:first_app/components/alert_dialog_cat.dart';
+import 'package:first_app/components/edit_categ.dart';
 import 'package:flutter/material.dart';
 import 'package:first_app/models/categList.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 class CategoryCard extends StatelessWidget {
+  
   final CategoryEntity _category;
 
   CategoryCard(this._category);
@@ -37,20 +39,30 @@ class CategoryCard extends StatelessWidget {
                   SizedBox(width: 10),
                   Row(
                     children: [
-                      IconButton(
-                            alignment: Alignment.centerLeft,
-                            padding: EdgeInsets.only(left:0),
-                            icon: Icon(Icons.clear_rounded, size: 20.0),
-                          
-                            onPressed: () async{
-                              final action = await AlertDialogsCat.yesCancelDialog(context, _category.category.toString(), 'Delete Category', 'Are you sure you want to delete ');
-                            },
-                          ),
+                      
                       Text(_category.category.toString(), style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
                         fontSize: 18, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
-                        letterSpacing: 1.3)),                            
+                        letterSpacing: 1.3)),  
+                      IconButton(
+                          alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.only(left:15),
+                          icon: Icon(Icons.edit_rounded, size: 15.0),
+                        
+                          onPressed: () async{
+                            final action = await EditCateg.yesCancelDialog(context, _category.category.toString(), 'Edit Category', 'Total Hours ');
+                          },
+                        ),  
+                      IconButton(
+                          alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.only(left:0),
+                          icon: Icon(Icons.clear_rounded, size: 15.0),
+                        
+                          onPressed: () async{
+                            final action = await AlertDialogsCat.yesCancelDialog(context, _category.category.toString(), _category.hasGoal.toString(), 'Delete Category', 'Are you sure you want to delete ');
+                          },
+                        ),                         
                       Center(child:
-                        SizedBox(width: 60)
+                        SizedBox(width: 10)
                       ),//_category.categProgress/_category.categTotal)*100).toInt().toString() 
                           
                       Text('% completed', style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
@@ -62,7 +74,7 @@ class CategoryCard extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.fromLTRB(0,7,0,0),
                     child: LinearPercentIndicator(  //Category Linear Percent Indicator
-                      width: 330,
+                      width: 310,
                       animation: true,
                       lineHeight: 16,
                       center: Row(
@@ -70,7 +82,7 @@ class CategoryCard extends StatelessWidget {
                           Text(_category.categProgress.toString(), style: TextStyle(fontSize: 12, color:
                           Color.fromARGB(255, 228, 223, 238))),
                           Center(child:
-                            SizedBox(width: 255)
+                            SizedBox(width: 245)
                           ),
                           Text(_category.categTotal.toString(), style: TextStyle(fontSize: 12, color:
                           Color.fromARGB(255, 143, 141, 150))),
