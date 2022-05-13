@@ -12,6 +12,7 @@ class AlertDialogs {
   static Future<DialogsAction> yesCancelDialog(
     BuildContext context,
     String goal,
+    String category,
     String title,
     String body,
   ) async {
@@ -32,8 +33,17 @@ class AlertDialogs {
                   (goal != "Instance of 'CategoryEntity") ?
                   await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('goals').doc(goal).delete().whenComplete(() {
                         print("$goal deleted"); 
-                        }): print("category delete");
-                  Navigator.of(context).pop(DialogsAction.yes);},
+                        FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(category).update({'hasGoal': false});
+                        Navigator.of(context).pop(DialogsAction.yes);
+                        showDialog(
+                        context: context,
+                        builder: (BuildContext context) => _buildPopupDialogDeleteGoal(context));
+                        }): print("");
+                  // await FirebaseFirestore.instance.collection('UserData').doc(uid).collection(goal.goalcategory).doc().collection('goals').doc(goal).delete().whenComplete(() {
+                  //       print("$goal deleted"); 
+                  //       }): print("");
+                  //Navigator.of(context).pop(DialogsAction.yes);
+                  },
               child: Text(
                 'Confirm', style: TextStyle(color: Color.fromARGB(255, 121, 38, 216), fontWeight: FontWeight.bold),
               ),
@@ -51,5 +61,24 @@ class AlertDialogs {
       }
     );
     return (action != null) ? action : DialogsAction.cancel;
+  }
+  static _buildPopupDialogDeleteGoal(BuildContext context) {
+    return AlertDialog(
+    title: const Text('Successfully deleted a goal!'),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    content:  Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+    ),
+    actions: <Widget>[
+       FlatButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        textColor: Theme.of(context).primaryColor,
+        child: const Text('Close'),
+      ),
+    ],
+  );
   }
 }
