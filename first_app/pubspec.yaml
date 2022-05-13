@@ -42,6 +42,7 @@ dependencies:
   form_field_validator: ^1.1.0
   shared_preferences: ^2.0.13
   firebase_auth: ^3.3.11
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
@@ -74,6 +75,7 @@ flutter:
     - assets/images/profileImage.png
     - assets/images/Education.png
     - assets/images/header.png
+    - assets/images/design_2.png
     - assets/images/default_profile.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
