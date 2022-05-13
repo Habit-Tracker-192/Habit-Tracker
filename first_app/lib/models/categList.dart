@@ -1,22 +1,3 @@
-// import 'dart:ffi';
-
-// class CategoryEntity {
-//   String? category;
-//   late num categProgress;
-//   late num categTotal;
-  
-
-//   CategoryEntity();
-
-//   Map<String, dynamic> toJson() => {'category': category, 'categProgress': categProgress,'categTotal': categTotal};
-
-//   CategoryEntity.fromSnapshot(snapshot)
-//     : category = snapshot.data()['category'],
-//       categProgress = snapshot.data()['categProgress'],
-//       categTotal = snapshot.data()['categTotal']
-//       ;
-// }
-
 import 'dart:ffi';
 
 class CategoryEntity {
@@ -26,7 +7,6 @@ class CategoryEntity {
   late num categTargetHours;
   String? categDesc;
   late bool hasGoal;
-  //late num goalCount;
   
 
   CategoryEntity();
@@ -37,8 +17,7 @@ class CategoryEntity {
     'categTotal': categTotal,
     'categTargetHours': categTargetHours,
     'categDesc': categDesc,
-    'hasGoal': hasGoal,
-    //'goalCount': goalCount
+    'hasGoal': hasGoal
     };
 
   CategoryEntity.fromSnapshot(snapshot)
@@ -48,6 +27,5 @@ class CategoryEntity {
       categTargetHours = snapshot.data()['categTargetHours'],
       categDesc = snapshot.data()['categDesc'],
       hasGoal = snapshot.data()['hasGoal']
-      //goalCount = snapshot.data()['goalCount']
       ;
 }
