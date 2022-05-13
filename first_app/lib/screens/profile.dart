@@ -5,13 +5,14 @@ import 'package:first_app/models/goalList.dart';
 import 'package:first_app/services/authenticate.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'categDetail.dart';
-import 'login.dart';
+import 'package:first_app/components/friends_goals.dart';
+import 'dart:developer';
+import 'package:first_app/models/friend.dart';
+
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
-
 
 
   @override
@@ -19,39 +20,24 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  
-
-  final FireAuth auth = FireAuth();
-
   List<String> usernames = [];
   List<String> names = [];
+
+  final uid = FireAuth().currentUser?.uid;
 
   @override
   Widget build(BuildContext context) => DefaultTabController (
     length: 2,
     child: Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(300.0),
+        preferredSize: Size.fromHeight(320.0),
         child: AppBar(
-          //backgroundColor: Color.fromARGB(255, 154, 153, 238),
-          title: Container(
-            child: IconButton(
-              alignment: Alignment.topRight,
-              padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
-              icon: Icon(Icons.logout_rounded, size: 30.0,color: Color.fromRGBO(64, 64, 64, 1)),
-              
-
-              onPressed: () async {
-                
-                  await FireAuth.signOut();
-                  // Navigator.push(context,
-                  // MaterialPageRoute(builder: (context) => Login()));
-                  Navigator.pushAndRemoveUntil(context,
-                  MaterialPageRoute(builder: (builder) => Login()), (route) => false);
-                //}
-                //);
-                
-              },
+          leading: GestureDetector(
+            onTap: () {},
+            child: const Icon(
+              Icons.logout_rounded,
+              size: 35,
+              color: Color.fromRGBO(64, 64, 64, 1),// add custom icons also
             ),
           ),
           actions: [
@@ -65,7 +51,7 @@ class _ProfileState extends State<Profile> {
                   color: Color.fromRGBO(64, 64, 64, 1),
                     ),
                 )
-            )
+            ) 
           ],
             
           backgroundColor: const Color.fromARGB(255, 176,156,220),
@@ -82,7 +68,7 @@ class _ProfileState extends State<Profile> {
                 height: 5,
               ),
 
-              const Text('Louise Denise Bacani',
+              const Text('John Caleb Bunye',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 17,
@@ -91,7 +77,7 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
 
-              const Text('@dencute',
+              const Text('@calebunbun',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.white,
@@ -150,8 +136,15 @@ class MyProfile extends StatefulWidget {
 }
 
 class _MyProfileState extends State<MyProfile> {  //RECENT TAB
+  // List goal = ["Exercise", "Read Books", "Journaling"];
+  // List goalcategory = ["Health", "Recreation", "Recreation"];
+  // List progress = [35, 54, 20];
+  // List total = [50, 90, 20];
+  // List category = ["Education", "Health"];
+  // List categProgress = [200, 150];
+  // List categTotal = [250, 200];
   List<Object> _goals = [];
-
+  
   @override
   void didChangeDependencies(){
     super.didChangeDependencies();
@@ -179,19 +172,19 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
     body: SafeArea(
       child: Column(
         children: [
-          SizedBox(height: 5),
-          Container( //RECENT LOG TEXT
-            height: 45,
+          const SizedBox(height: 5),
+          Container( //CATEGORY TEXT
+            height: 27,
             alignment: Alignment.centerLeft,
-            child: Text('    Recent Log', style: TextStyle(fontSize: 20, fontFamily: 'Poppins'))
+            child: const Text('    Recent Log', style: TextStyle(fontSize: 20, fontFamily: 'Poppins'))
           ),
           Container(  //RECENT GOALS LISTVIEW
-            height: 280,
+            height: 250,
             child: ListView.builder(
-            padding: EdgeInsets.fromLTRB(0,5,0,0),
+            padding: EdgeInsets.fromLTRB(0,0,0,0),
             itemCount: _goals.length,
             shrinkWrap: true,
-            itemBuilder: (BuildContext context, int index) => GoalCard(_goals[index] as GoalEntity) 
+            itemBuilder: (BuildContext context, int index) => GoalCard(_goals[index] as GoalEntity)
             ),
           ),
       ])
@@ -205,146 +198,91 @@ class Friends extends StatefulWidget {
 }
 
 class _FriendsState extends State<Friends> {
+  final uid = FireAuth().currentUser?.uid;
+  List<Object> _goals = [];
+  List<dynamic> _friendsList = [];
+  String? uidFriend;
+  List<Object> _goalsFriends = [];
 
-  List goal = ["Watch CS 21 Lectures", "Study CS 191", "Take / Fix Notes", "Exercise", "Read Books"];
-  List goalcategory = ["Education", "Education", "Education", "Health", "Recreation"];
-  List progress = [54, 35, 15, 35, 54];
-  List total = [90, 50, 20, 50, 90];
-  List<String> friendsList = ['@zayruh','@zayruh','@DenCute','@DenCute','@DenCute'];
+  @override
+  void didChangeDependencies(){
+    super.didChangeDependencies();
+    getGoalList();
+    getFriendsList();
+    getFriendGoalList();
+  }
 
+  Future getGoalList() async {
+    final uid = FireAuth().currentUser?.uid;
+
+    var data = await FirebaseFirestore.instance
+      .collection('UserData')
+      .doc(uid)
+      .collection('goals')
+      .orderBy('lastlog', descending: true)
+      .limit(4)
+      .get();
+    setState(() {
+      _goals = List.from(data.docs.map((doc)=> GoalEntity.fromSnapshot(doc)));
+    });
+    print('goals $_goals');
+  }
+
+  Future getFriendGoalList() async {
+    final uid = FireAuth().currentUser?.uid;
+    var data = await FirebaseFirestore.instance
+      .collection('UserData')
+      .doc(uidFriend)
+      .collection('goals')
+      .orderBy('lastlog', descending: true)
+      .limit(4)
+      .get();
+    setState(() {
+      _goals = List.from(data.docs.map((doc)=> GoalEntity.fromSnapshot(doc)));
+    });
+    print('goalsFriends $_goals');
+  }
+
+  Future getFriendsList() async {
+    final uid = FireAuth().currentUser?.uid;
+
+    var data = await FirebaseFirestore.instance
+      .collection('UserData')
+      .doc(uid)
+      .collection('friends')
+      .get();
+    setState(() {
+      _friendsList = List.from(data.docs.map((doc)=> FriendEntity.fromSnapshot(doc)));
+    });
+    print('friendslist $_friendsList');
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
     
     body: SafeArea(
-      child: Column(
+      child: 
+      Column(
         children: [
-          SizedBox(height: 5),
-        Container(
-           //Friends Logs 
-          height: 47,
-          //padding: EdgeInsets.fromLTRB(0,15,0,0),
+        Container( //Friends Logs 
+          height: 27,
           alignment: Alignment.centerLeft,
           child: Text('    Friends\' Logs', style: TextStyle(fontSize: 20, fontFamily: 'Poppins'))
         ),
+        // ignore: sized_box_for_whitespace
         Container(
           height:280,
           child: ListView.builder(
-              padding: EdgeInsets.fromLTRB(0,5,0,0),
-              itemCount: goal.length,
+              padding: const EdgeInsets.fromLTRB(0,0,0,0),
+              itemCount: _friendsList.length,
               shrinkWrap: true,
-              itemBuilder: (BuildContext context, int index) => Container(
-                width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.0),
-                child: Card(
-                  elevation: 5.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25.0),
-                  ),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            SizedBox(width: 5.0),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                Container( //CATEGORY TEXT
-                                  height: 15,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(friendsList[index], style: TextStyle(fontSize: 12, fontFamily: 'Poppins'))
-                                ),
-                                Row(
-                                  //crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(goal[index], style: TextStyle(color: 
-                                      Color.fromARGB(255, 72, 68, 80), fontSize: 
-                                      18.0, fontWeight: FontWeight.bold, fontFamily: 'Poppins',
-                                      letterSpacing: 1.1),),
-                                    
-                                    IconButton(
-                                      alignment: Alignment.centerRight,
-                                      padding: EdgeInsets.only(left:30),
-                                      icon: Icon(Icons.edit, size: 15.0),
-
-                                      onPressed: (){},
-                                    ),  
-                                    IconButton(
-                                      alignment: Alignment.centerRight,
-                                      padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
-                                      icon: Icon(Icons.clear_rounded, size: 15.0),
-
-                                      onPressed: (){},
-                                    ),    
-                                ],),
-                              
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(0,0,0,7),
-                                      child: Text(goalcategory[index], style: TextStyle(color: 
-                                      Color.fromARGB(255, 94, 93, 189), fontStyle: FontStyle.italic,
-                                        fontFamily: 'Poppins', fontWeight: FontWeight.bold, 
-                                        fontSize: 13.0, letterSpacing: 1.0)),
-                                    ),
-                                    
-                                    Center(child:
-                                      SizedBox(width: 190)
-                                    ),
-                                    
-                                    Text(((progress[index]/total[index])*100).toInt().toString() 
-                                        + '%', style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
-                                        fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
-                                        letterSpacing: 1.3)),
-                                  ],
-                                ),
-
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(0,0,0,10),
-                                  child: LinearPercentIndicator( //Recent Goal linear percent bar
-                                    width: 300,
-                                    animation: true,
-                                    lineHeight: 15,
-                                    center: Row(
-                                      
-                                      children: [
-                                        Text(progress[index].toString(), style: TextStyle(fontSize: 12, color:
-                                        Color.fromARGB(255, 228, 223, 238))),
-                                        Center(child:
-                                          SizedBox(width: 240)
-                                        ),
-                                        Text(total[index].toString(), style: TextStyle(fontSize: 12, color:
-                                        Color.fromARGB(255, 143, 141, 150))),
-                                      ],
-                                    ),
-                                    linearStrokeCap: LinearStrokeCap.roundAll,
-                                    percent: progress[index]/total[index],
-                                    progressColor: Color.fromARGB(255, 104, 106, 207),
-                                    backgroundColor: Color.fromARGB(255, 228, 223, 238),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ],
-                        )
-                      ],
-                    )
-                  ),
-                )
-              ),
+              itemBuilder: (BuildContext context, int index) => FriendGoalCard(_goals[index] as GoalEntity,_friendsList[index] as FriendEntity)
           ),
         ),
         ]
     ),
     )
-   
   );
 }
+
 
