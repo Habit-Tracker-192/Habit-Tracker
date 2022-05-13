@@ -1,6 +1,5 @@
 
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:first_app/components/alert_dialog.dart';
 import 'package:first_app/components/alert_dialog_cat.dart';
 import 'package:first_app/components/goal_card.dart';
@@ -12,7 +11,6 @@ import 'categDetail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:first_app/services/authenticate.dart';
-
 
 class Goal extends StatefulWidget {
   const Goal({Key? key}) : super(key: key);
@@ -77,6 +75,13 @@ class Recent extends StatefulWidget {
 
 class _RecentState extends State<Recent> {  //RECENT TAB
 
+  // List goal = ["Exercise", "Read Books", "Journaling"];
+  // List goalcategory = ["Health", "Recreation", "Recreation"];
+  // List progress = [35, 54, 20];
+  // List total = [50, 90, 20];
+  // List category = ["Education", "Health"];
+  // List categProgress = [200, 150];
+  // List categTotal = [250, 200];
   List<Object> _goals = [];
   List<Object> _categories = [];
 
@@ -129,18 +134,17 @@ class _RecentState extends State<Recent> {  //RECENT TAB
             padding: EdgeInsets.fromLTRB(0,20,0,0),
             itemCount: _goals.length,
             shrinkWrap: true,
-            itemBuilder: (BuildContext context, int index) =>  GoalCard(_goals[index] as GoalEntity) 
-            
+            itemBuilder: (BuildContext context, int index) =>  GoalCard(_goals[index] as GoalEntity)
             ),
           ),
           Container( //CATEGORY TEXT
-            height: 70,
+            height: 30,
             alignment: Alignment.centerLeft,
             child: Text('    Categories', style: TextStyle(fontSize: 20, fontFamily: 'Poppins'))
           ),
 
           Container(    //CATEGORY LISTVIEW
-            height: 150,
+            height: 200,
             child: ListView.builder(
               itemCount: _categories.length,
               itemBuilder: (BuildContext ctx, int index){
@@ -153,17 +157,14 @@ class _RecentState extends State<Recent> {  //RECENT TAB
                       builder: (context) => categDetail()),
                   );
                 },
-
-                // onDoubleTap: () async {
-                //   final action = await AlertDialogsCat.yesCancelDialog(context, _categories[index].toString(), 'Delete Category', 'Are you sure you want to delete ');
-                // },
+                
                 child:  CategoryCard(_categories[index] as CategoryEntity)  
-                );             
-              },
+                ); 
+              }
             )
           )
       ,])
-    )  
+    )
   );
 }
 
@@ -180,10 +181,8 @@ class _InProgressState extends State<InProgress> {
     getGoalList();
   }
 
-
   Future getGoalList() async {
     final uid = FireAuth().currentUser?.uid;
-
     var data = await FirebaseFirestore.instance
       .collection('UserData')
       .doc(uid)
@@ -194,6 +193,7 @@ class _InProgressState extends State<InProgress> {
       _goals = List.from(data.docs.map((doc)=> GoalEntity.fromSnapshot(doc)));
     });
   }
+  
 
 
   @override
@@ -202,8 +202,7 @@ class _InProgressState extends State<InProgress> {
           padding: EdgeInsets.fromLTRB(0,20,0,0),
           itemCount: _goals.length,
           shrinkWrap: true,
-           itemBuilder: (BuildContext context, int index) => GoalCard(_goals[index] as GoalEntity) 
-          
+          itemBuilder: (BuildContext context, int index) => GoalCard(_goals[index] as GoalEntity) 
   ));
 }
 
@@ -257,8 +256,7 @@ class _AllState extends State<All> {
     super.didChangeDependencies();
     getGoalList();
   }
-
-
+  
   Future getGoalList() async {
     final uid = FireAuth().currentUser?.uid;
 
@@ -271,7 +269,7 @@ class _AllState extends State<All> {
       _goals = List.from(data.docs.map((doc)=> GoalEntity.fromSnapshot(doc)));
     });
   }
-
+  
   @override
   Widget build(BuildContext context) => Scaffold(
     floatingActionButton: null,
@@ -290,7 +288,5 @@ class _AllState extends State<All> {
           itemBuilder: (BuildContext context, int index) => GoalCard(_goals[index] as GoalEntity)
         );},
     ),
-    
-    
   );
 }
