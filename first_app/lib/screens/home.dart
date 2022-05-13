@@ -15,16 +15,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  //DateTime dateTime = DateTime.now();
   DateTime currentTime = DateTime.now();
-  //String date = formatDate(dateTime,[yyyy, '/', mm, '/', dd] );
-  //final DateTime now = DateTime.now();
-  //final DateFormat formatter = DateFormat('yyyy-MM-dd');
-  //final String formatted = formatter.format(now);
-
-  //print(dateTime.toString()); //2022-03-04 12:35:38.997
- // int currentYear = dateTime.year;
-  //print(currentYear.toString()); //2022
 
   @override
   Widget build(BuildContext context) => DefaultTabController (
