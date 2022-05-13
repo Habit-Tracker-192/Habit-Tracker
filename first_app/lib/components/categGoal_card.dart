@@ -1,5 +1,6 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors
 
+import 'package:first_app/components/alert_dialog.dart';
 import 'package:first_app/models/categGoalList.dart';
 import 'package:flutter/material.dart';
 import 'package:first_app/models/goalList.dart';
@@ -56,7 +57,25 @@ class CategGoalCard extends StatelessWidget {
                             padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
                             icon: Icon(Icons.clear_rounded, size: 15.0),
 
-                            onPressed: (){},
+                            onPressed: ()async {
+                              final action = await AlertDialogs.yesCancelDialog(context, _goal.goal.toString(), _goal.goalcategory.toString(), 'Delete Goal', 'Are you sure you want to delete ');
+                              //deleteData();
+                              // String? data = _goal.goal;
+                              // DocumentReference documentReference = FirebaseFirestore.instance.collection('UserData').doc(uid).collection('goals').doc(_goal.goal);
+                              // await documentReference.delete();
+                              // String? data = _goal.goal;
+                              // var documentReference = FirebaseFirestore.instance.collection('UserData').doc(uid).collection('goals');//.doc(_goal.goal);
+                              // await documentReference.doc(data).delete();
+                              // Navigator.of(context).pop();
+                              // .whenComplete(() {
+                              //   print("$data deleted");
+                              // });
+                              
+                              // await FirebaseFirestore.instance.runTransaction((Transaction myTransaction) async {
+                              //   DocumentReference documentReference = FirebaseFirestore.instance.collection('UserData').doc(uid).collection('goals').doc(_goal.goal);
+                              //   await myTransaction.delete(documentReference);
+                              // });
+                            },
                           ),    
                       ],),
                   
