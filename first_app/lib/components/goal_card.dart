@@ -61,7 +61,7 @@ class GoalCard extends StatelessWidget {
                             icon: Icon(Icons.clear_rounded, size: 15.0),
 
                             onPressed: () async {
-                              final action = await AlertDialogs.yesCancelDialog(context, _goal.goal.toString(), 'Delete Goal', 'Are you sure you want to delete ');
+                              final action = await AlertDialogs.yesCancelDialog(context, _goal.goal.toString(), _goal.goalcategory.toString(), 'Delete Goal', 'Are you sure you want to delete ');
                             },
                           ),    
                       ],),
