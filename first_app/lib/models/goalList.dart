@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class GoalEntity {
   String? goal;
@@ -7,6 +8,7 @@ class GoalEntity {
   late num total;//times
   late num duration;
   String? desc;
+  late Timestamp lastlog;
   
   late num percent;
   late num progress;
@@ -24,6 +26,7 @@ class GoalEntity {
       frequency = snapshot.data()['frequency'],
       total = snapshot.data()['total'],
       duration = snapshot.data()['duration'],
-      desc = snapshot.data()['desc']
+      desc = snapshot.data()['desc'],
+      lastlog = snapshot.data()['lastlog']
       ;
 }
