@@ -114,11 +114,9 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
         .get()
         .then((snapshot) {
           snapshot.docs.forEach((element) {
-            print(element.id);
             _goals.add(element.id);
           });
         });
-      print('goals $_goals');
     }
 
     List<Object> _categories = [];
@@ -521,7 +519,6 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
                                   var goalID = _goalNameController.text;
 
                                   if (_formKey4.currentState!.validate()){
-                                    print('nce');
                                     await doesCategoryAlreadyExist(_goalCategoryController.text);
                                     _goals.add(_goalNameController.text);
                                     //delete goal from category list
