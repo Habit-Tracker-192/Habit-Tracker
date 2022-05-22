@@ -43,7 +43,7 @@ class _SearchUserState extends State<SearchUser> {
             .get()
             .then((value) {
               uidFriend = value.docs.first.id;
-              print('uidFriend is $uidFriend');
+              // print('uidFriend is $uidFriend');
             });
     }
     return uidFriend;
@@ -63,11 +63,11 @@ class _SearchUserState extends State<SearchUser> {
               }
             });
     }
-    print(result);
+    // print(result);
     return result;
   }
 
-  void onSearch() async {
+  Future onSearch() async {
     if(_search!.text.isNotEmpty){
       String? user = _search?.text;
       uidFriend = await searchUID(user);
@@ -82,7 +82,7 @@ class _SearchUserState extends State<SearchUser> {
               map = i.data();
               //isLoading = false;
             });    
-            print("map: $map"); 
+            // print("map: $map"); 
             }
                
           });
@@ -155,7 +155,12 @@ class _SearchUserState extends State<SearchUser> {
                           alignment: Alignment.topRight,
                           padding: EdgeInsets.fromLTRB(20, 10, 0, 0),
                           icon: Icon(Icons.search_rounded, size: 30.0),
-                          onPressed: onSearch,
+                          onPressed:  () async{
+                            await onSearch();
+                            setState(() {
+                              
+                            });
+                          }
                         ),   
                       ],
                     ),
