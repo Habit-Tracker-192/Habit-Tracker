@@ -1,7 +1,10 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:first_app/components/alert_dialog.dart';
 import 'package:first_app/components/goal_card.dart';
 import 'package:first_app/models/goalList.dart';
+import 'package:first_app/models/user.dart';
+import 'package:first_app/screens/login.dart';
 import 'package:first_app/services/authenticate.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -24,34 +27,58 @@ class _ProfileState extends State<Profile> {
   List<String> names = [];
 
   final uid = FireAuth().currentUser?.uid;
+  final username = FireAuth().currentUser?.displayName;
+  String? _bio = '';
+  @override
+  void didChangeDependencies(){
+    super.didChangeDependencies();
+    getBio();
+  }
+
+  Future getBio() async {
+    final uid = FireAuth().currentUser?.uid;
+    final docRef = await FirebaseFirestore.instance.collection('UserData').doc(uid).get();
+    _bio = docRef.get("bio");
+     setState(() {
+      _bio = _bio;
+    });
+  }
 
   @override
   Widget build(BuildContext context) => DefaultTabController (
+    
     length: 2,
     child: Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(320.0),
+        preferredSize: Size.fromHeight(300.0),
         child: AppBar(
-          leading: GestureDetector(
-            onTap: () {},
-            child: const Icon(
-              Icons.logout_rounded,
-              size: 35,
-              color: Color.fromRGBO(64, 64, 64, 1),// add custom icons also
-            ),
-          ),
+          leading:  Container(
+            child: IconButton(
+              alignment: Alignment.topRight,
+              padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+              icon: Icon(Icons.logout_rounded, size: 30.0,color: Color.fromRGBO(64, 64, 64, 1)),
+
+
+              onPressed: () async {
+                  await FireAuth.signOut();
+                  Navigator.pushAndRemoveUntil(context,
+                  MaterialPageRoute(builder: (builder) => Login()), (route) => false);
+              },
+            ),),
           actions: [
             Padding(
               padding: EdgeInsets.only(right: 20.0),
-              child: GestureDetector(
-                onTap: () {},
-                child: const Icon(
-                  Icons.mode_edit_rounded,
-                  size: 30,
-                  color: Color.fromRGBO(64, 64, 64, 1),
-                    ),
+              child: IconButton(
+                  icon:
+                  Icon(Icons.mode_edit_rounded,size: 30,color: Color.fromRGBO(64, 64, 64, 1),), 
+                  onPressed: () async {
+                    await AlertDialogs.EditProfileDialog(context,  'Edit your bio');
+                    setState(() {
+                      _bio = _bio;
+                    });
+                  },
+                ),
                 )
-            ) 
           ],
             
           backgroundColor: const Color.fromARGB(255, 176,156,220),
@@ -68,17 +95,8 @@ class _ProfileState extends State<Profile> {
                 height: 5,
               ),
 
-              const Text('John Caleb Bunye',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 17,
-                color: Colors.white,
-                letterSpacing: 1.0,
-                ),
-              ),
-
-              const Text('@calebunbun',
-              style: TextStyle(
+              Text(username!,
+              style: const TextStyle(
                 fontSize: 14,
                 color: Colors.white,
                 letterSpacing: 1.0,
@@ -98,11 +116,11 @@ class _ProfileState extends State<Profile> {
                 height: 42.0,
                 padding: const EdgeInsets.fromLTRB(10.0, 5.0, 5.0, 7.0),
                 width: 360,
-                child: const Text('CS student na pagod na <3',
-                  style: TextStyle(
+                child: Text(_bio!,
+                  style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 11,
-                  color: Color.fromRGBO(100, 88, 204, 1),
+                  color: Color.fromARGB(255, 1, 0, 8),
                   letterSpacing: 1.0,
                   )
                 )
@@ -136,13 +154,6 @@ class MyProfile extends StatefulWidget {
 }
 
 class _MyProfileState extends State<MyProfile> {  //RECENT TAB
-  // List goal = ["Exercise", "Read Books", "Journaling"];
-  // List goalcategory = ["Health", "Recreation", "Recreation"];
-  // List progress = [35, 54, 20];
-  // List total = [50, 90, 20];
-  // List category = ["Education", "Health"];
-  // List categProgress = [200, 150];
-  // List categTotal = [250, 200];
   List<Object> _goals = [];
   
   @override
@@ -169,7 +180,9 @@ class _MyProfileState extends State<MyProfile> {  //RECENT TAB
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(
+    resizeToAvoidBottomInset: false,
+    body: SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
       child: Column(
         children: [
           const SizedBox(height: 5),
@@ -203,49 +216,62 @@ class _FriendsState extends State<Friends> {
   List<dynamic> _friendsList = [];
   String? uidFriend;
   List<Object> _goalsFriends = [];
-
+  List<GoalEntity> _goalsList=[];
+  List<String?> _userList = [];
+  late final Future? myFuture = getFuture();
   @override
   void didChangeDependencies(){
     super.didChangeDependencies();
-    getGoalList();
-    getFriendsList();
-    getFriendGoalList();
+    // getFriendsList();
+    // getGoalList();
+    // getFriendGoalList();
+  }
+  Future<List<GoalEntity>> getFuture()async{
+    await getFriendsList();
+    var lst = await getFriendGoalList();
+    return lst;
+  }
+  Future<String?> searchUID(String? username) async {
+    String? uidFriend;
+    if(username!.isNotEmpty){
+      await FirebaseFirestore.instance.collection('UserData')
+            .where("username", isEqualTo: username)
+            .get()
+            .then((value) {
+              uidFriend = value.docs.first.id;
+              // print('uidFriend is $uidFriend');
+            });
+    }
+    return uidFriend;
   }
 
-  Future getGoalList() async {
-    final uid = FireAuth().currentUser?.uid;
 
-    var data = await FirebaseFirestore.instance
-      .collection('UserData')
-      .doc(uid)
-      .collection('goals')
-      .orderBy('lastlog', descending: true)
-      .limit(4)
-      .get();
-    setState(() {
-      _goals = List.from(data.docs.map((doc)=> GoalEntity.fromSnapshot(doc)));
-    });
-    print('goals $_goals');
-  }
-
-  Future getFriendGoalList() async {
+  Future<List<GoalEntity>> getFriendGoalList() async {
     final uid = FireAuth().currentUser?.uid;
-    var data = await FirebaseFirestore.instance
+    String? uidFriend;
+    _goalsList = [];
+    for (FriendEntity o in _friendsList){
+      // print(o.username);
+      uidFriend = await searchUID(o.username);
+      var data = await FirebaseFirestore.instance
       .collection('UserData')
       .doc(uidFriend)
       .collection('goals')
       .orderBy('lastlog', descending: true)
-      .limit(4)
+      .limit(2)
       .get();
-    setState(() {
-      _goals = List.from(data.docs.map((doc)=> GoalEntity.fromSnapshot(doc)));
-    });
-    print('goalsFriends $_goals');
+      setState(() {
+      _userList.addAll(data.docs.map((doc)=> o.username)) ;
+      _goalsList.addAll(data.docs.map((doc)=> GoalEntity.fromSnapshot(doc)));
+      });
+    }
+    // print(_userList);
+    return _goalsList;
+    // print(_goalsList);
   }
 
   Future getFriendsList() async {
     final uid = FireAuth().currentUser?.uid;
-
     var data = await FirebaseFirestore.instance
       .collection('UserData')
       .doc(uid)
@@ -254,30 +280,61 @@ class _FriendsState extends State<Friends> {
     setState(() {
       _friendsList = List.from(data.docs.map((doc)=> FriendEntity.fromSnapshot(doc)));
     });
-    print('friendslist $_friendsList');
+    // print(_goalsList);
+    // getFriendGoalList();
+    // return _friendsList;
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    
-    body: SafeArea(
+    resizeToAvoidBottomInset: false,
+    body: SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
       child: 
       Column(
         children: [
         Container( //Friends Logs 
           height: 27,
           alignment: Alignment.centerLeft,
-          child: Text('    Friends\' Logs', style: TextStyle(fontSize: 20, fontFamily: 'Poppins'))
+          child: const Text('    Friends\' Logs', style: TextStyle(fontSize: 20, fontFamily: 'Poppins'))
         ),
         // ignore: sized_box_for_whitespace
         Container(
-          height:280,
-          child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(0,0,0,0),
-              itemCount: _friendsList.length,
-              shrinkWrap: true,
-              itemBuilder: (BuildContext context, int index) => FriendGoalCard(_goals[index] as GoalEntity,_friendsList[index] as FriendEntity)
-          ),
+          height:290,
+          child: FutureBuilder(
+            future: myFuture,
+            // Future.wait([getFriendsList(),getFriendGoalList(),getGoalList()]),
+            builder: (context, snapshot) {
+              final error = snapshot.error;
+              if (snapshot.hasError){
+                return Text('Server encountered an error');
+              }
+              else if(snapshot.hasData){
+                // return Text('gumagana');
+                return ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(0,0,0,0),
+                    itemCount: _goalsList.length,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) => FriendGoalCard(_goalsList[index], _userList[index])
+                    );
+              }
+              else{
+                return Container(
+                  height: 50,
+                  width: 50,
+                  child: const CircularProgressIndicator(),
+                );
+                
+              }
+            }
+          
+          )
+          // ListView.builder(
+          //     padding: const EdgeInsets.fromLTRB(0,0,0,0),
+          //     itemCount: _friendsList.length,
+          //     shrinkWrap: true,
+          //     itemBuilder: (BuildContext context, int index) => FriendGoalCard(_goals[index] as GoalEntity,_friendsList[index] as FriendEntity)
+          // ),
         ),
         ]
     ),
