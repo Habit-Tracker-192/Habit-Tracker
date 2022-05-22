@@ -26,7 +26,6 @@ class AlertDialogs {
             .get()
             .then((value) {
               uidFriend = value.docs.first.id;
-              print(uidFriend);
             });
     }
     return uidFriend;
@@ -46,7 +45,6 @@ class AlertDialogs {
               }
             });
     }
-    print(result);
     return result;
   }
 
@@ -318,8 +316,6 @@ class AlertDialogs {
                       }
                       
                     });
-                  print(friend);
-                  print(uidFriend);
                   
                   //REMOVE FRIEND FROM USER FRIENDS LIST
                   await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('friends').doc(uidFriend).delete().whenComplete(() {
@@ -407,51 +403,92 @@ class AlertDialogs {
   }
 
 
-
-  // static Future<DialogsAction> EditGoalDialog(
-  //   BuildContext context,
-  //   String username,
-  //   String uidFriend,
-  //   String title,
-  // ) async {
-  //   String body = 'Are you sure you want to reject ';
-  //   final action = await showDialog(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (BuildContext context){
-  //       return AlertDialog(
-  //         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-  //         title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-  //         content: Text(body + '\'' + username + '\'''s friend request?'),
-  //         actions: <Widget>[
-  //           RaisedButton(
-  //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-  //             onPressed: () async { 
-  //                 final uid = FireAuth().currentUser?.uid;
-  //                 final docRef = await FirebaseFirestore.instance.collection('UserData').doc(uid).get();
-  //                 String userUsername = docRef.get("username");
-
-  //                 await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('notifications').doc(uidFriend).delete().whenComplete(() {
-  //                       print("$username's request is deleted"); 
-  //                       });
-
-  //                 Navigator.of(context).pop(DialogsAction.yes);},
-  //             child: Text(
-  //               'Confirm', style: TextStyle(color: Color.fromARGB(255, 121, 38, 216), fontWeight: FontWeight.bold),
-  //             ),
-  //           ),
-  //           RaisedButton(
-  //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-  //             onPressed: () => 
-  //                 Navigator.of(context).pop(DialogsAction.cancel) ,
-  //             child: Text(
-  //               'Cancel', style: TextStyle(color: Color.fromARGB(255, 121, 38, 216), fontWeight: FontWeight.bold),
-  //             ),
-  //           )
-  //         ],
-  //       );
-  //     }
-  //   );
-  //   return (action != null) ? action : DialogsAction.cancel;
-  // }
+   static Future<DialogsAction> EditProfileDialog(
+    BuildContext context,
+    String title,
+  ) async {
+  TextEditingController _bioController = TextEditingController();
+  final _formKey5 = GlobalKey<FormState>();
+    final action = await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context){
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+          title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+          content: Form(
+            key: _formKey5,
+            child: TextFormField(
+              controller: _bioController,
+                  decoration: InputDecoration(
+                                  hintText: 'Describe yourself',
+                                  labelText: 'Bio',
+                                  labelStyle: const TextStyle(
+                                    fontSize: 18,
+                                    color:  Color.fromRGBO(100, 88, 204, 1),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(25.0),
+                                    borderSide: const BorderSide(
+                                      color: Color.fromRGBO(100, 88, 204, 1),
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(25.0),
+                                    borderSide: const BorderSide(
+                                      color: Colors.white,
+                                      width: 2.0,
+                                    ),
+                                  ),
+                                  fillColor: const Color.fromARGB(255 ,221,223,245),
+                                  filled: true,
+                                ),
+                                textInputAction: TextInputAction.done,
+                                validator: (value){
+                                  if (value!.isEmpty){
+                                    return 'Please add bio';
+                                  } 
+                                  else if (value.isNotEmpty && value.length <= 40 ){
+                                    return null;
+                                  }
+                                  else {
+                                    return 'Bio is too long!';
+                                  }
+                                },
+            ),
+          ),
+          actions: <Widget>[
+            RaisedButton(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              onPressed: () async { 
+                  final uid = FireAuth().currentUser?.uid;
+                  _formKey5.currentState!.validate();
+                  if(_formKey5.currentState!.validate()){
+                    print('validated');
+                    await FirebaseFirestore.instance.collection('UserData').doc(uid).update({'bio': _bioController.text});
+                    Navigator.of(context).pop(DialogsAction.yes);
+                  }
+                  else{
+                    return;
+                  }
+              },
+              child: Text(
+                'Confirm', style: TextStyle(color: Color.fromARGB(255, 121, 38, 216), fontWeight: FontWeight.bold),
+              ),
+            ),
+            RaisedButton(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              onPressed: () => 
+                  Navigator.of(context).pop(DialogsAction.cancel) ,
+              child: Text(
+                'Cancel', style: TextStyle(color: Color.fromARGB(255, 121, 38, 216), fontWeight: FontWeight.bold),
+              ),
+            )
+          ],
+        );
+      }
+    );
+    return (action != null) ? action : DialogsAction.cancel;
+  }
+  
 }
