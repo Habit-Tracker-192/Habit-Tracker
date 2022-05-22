@@ -95,7 +95,7 @@ class AlertDialogs {
                   (goal != "Instance of 'CategoryEntity") ?
                   await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('goals').doc(goal).delete().whenComplete(() {
                         print("$goal deleted"); 
-                         FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(category).update({'hasGoal': false});
+                        FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(category).update({'hasGoal': false});
                         Navigator.of(context).pop(DialogsAction.yes);
                         showDialog(
                         context: context,
@@ -151,7 +151,7 @@ class AlertDialogs {
                         });
                   //ADD FRIEND TO FRIENDS LIST
                   await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('friends').doc(uidFriend).set({
-                    "username": userUsername,
+                    "username": username,
                   }).whenComplete(() {
                       print("$username added to your friends list");
                         });
@@ -159,7 +159,7 @@ class AlertDialogs {
                 //FRIENDS SIDE
                   //ADD USER TO FRIENDS LIST
                   await FirebaseFirestore.instance.collection('UserData').doc(uidFriend).collection('friends').doc(uid).set({
-                    "username": username,
+                    "username": userUsername,
                   }).whenComplete(() {
                       print("You are added to $username's friends list");
                         });
