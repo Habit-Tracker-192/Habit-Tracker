@@ -1,5 +1,6 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:first_app/models/categList.dart';
 import 'package:first_app/models/goalList.dart';
 import 'package:first_app/screens/goals.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +10,8 @@ import '../models/friend.dart';
 import '../services/authenticate.dart';
 
 class EditGoal extends StatefulWidget {
-  const EditGoal({Key? key, required GoalEntity goal}) : super(key: key);
-  
+  const EditGoal({Key? key, required this.goal}) : super(key: key);
+  final GoalEntity goal;
 
   @override
   _EditGoalState createState() => _EditGoalState();
@@ -33,11 +34,6 @@ Map<int, Color> purple =
 
 class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
   List<String> category = [];
-  
-
-  
-  
-
   final frequencies = [
       'Daily',
       'Weekly',
@@ -64,6 +60,7 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
 
 
   String frequency = 'Daily';
+  String? value;
 
   var _textformfield_times = GlobalKey<FormFieldState>();
   var _textformfield_duration = GlobalKey<FormFieldState>();
@@ -75,7 +72,7 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
   var _textformfield_targetHours = GlobalKey<FormFieldState>();
   var _textformfield_categoryDescription = GlobalKey<FormFieldState>();
   var _textformfield_cover = GlobalKey<FormFieldState>();
-  String? value;
+
 
   final _formKey3 = GlobalKey<FormState>();
   final _formKey4 = GlobalKey<FormState>();
@@ -97,13 +94,15 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
       ),
     ],
   );
-}
+  }
 
 
 
   @override
   Widget build(BuildContext context) {
-    final goal = ModalRoute.of(context)!.settings.arguments as GoalEntity;
+    String? og_goalcat = widget.goal.goalcategory;
+    String? og_goal = widget.goal.goal;
+    // final goal = ModalRoute.of(context)!.settings.arguments as GoalEntity;
     List<dynamic> _goals = [];
     Future getGoal() async {
       final uid = FireAuth().currentUser?.uid;
@@ -115,12 +114,55 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
         .get()
         .then((snapshot) {
           snapshot.docs.forEach((element) {
+            print(element.id);
             _goals.add(element.id);
           });
         });
       print('goals $_goals');
     }
-    
+
+    List<Object> _categories = [];
+  Future getCategoryList() async {
+
+    final uid = FireAuth().currentUser?.uid;
+
+    var data = await FirebaseFirestore.instance
+      .collection('UserData')
+      .doc(uid)
+      .collection('categories')
+      .orderBy('category')
+      //.limit(1)
+      .get();
+    setState(() {
+      _categories = List.from(data.docs.map((doc)=> CategoryEntity.fromSnapshot(doc)));
+    });
+  }
+
+  bool _exist = false;
+  Future doesCategoryAlreadyExist(String category) async {
+    final uid = FireAuth().currentUser?.uid;
+
+    final QuerySnapshot result = await FirebaseFirestore.instance
+    .collection('UserData')
+    .doc(uid)
+    .collection('categories')
+    .where('category', isEqualTo: category)
+    .limit(1)
+    .get();
+
+    setState(() {
+      _exist = result.docs.isNotEmpty;
+    });
+  }
+
+  bool _categoryExist = false;
+  checkCategoryValue<bool>(String user) {//1 if exists
+    doesCategoryAlreadyExist(user).then((val){
+      _categoryExist = val;
+    });
+    return _categoryExist;
+  }
+
     DropdownMenuItem<String> buildMenuItem(String some) => DropdownMenuItem(
         value: some,
         child: Text(
@@ -206,7 +248,7 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
                                 key: _textformfield_goalName,
                                 controller: _goalNameController,
                                 decoration: InputDecoration(
-                                  hintText: 'dawd',
+                                  hintText: widget.goal.goal,
                                   labelText: 'Goal Name',
                                   labelStyle: const TextStyle(
                                     fontSize: 18,
@@ -229,18 +271,20 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
                                   filled: true,
                                 ),
                                 textInputAction: TextInputAction.done,
-                                validator: (value){
+                                validator: (String? value){
                                   if (_goals.contains(value)){
                                     return 'Goal Name already exists!';
                                   }
-                                  else if (value!.isNotEmpty && value.length <= 24 ){
+                                  else if (value!= null && value.isNotEmpty && value.length <= 24 ){
+                                    widget.goal.goal = value;
                                     return null;
-                                  }
-                                  else if (value.isEmpty){
-                                    return 'Please add a goal name';
                                   } 
-                                  else {
+                                  else if(value!= null && value.isNotEmpty && value.length > 24 ){
                                     return 'Goal Name is too long!';
+                                  }
+                                  else {
+
+                                    return null;
                                   }
                                 },
                               ),
@@ -248,7 +292,7 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
                               TextFormField(   
                                 decoration:  InputDecoration(
                                   
-                                  hintText: 'Which one of your Categories does this Goal belong?',
+                                  hintText: widget.goal.goalcategory,
                                   labelText: 'Category',
                                   labelStyle: const TextStyle(
                                     fontSize: 18,
@@ -270,10 +314,25 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
                                   fillColor: const Color.fromARGB(255 ,221,223,245),
                                   filled: true,
                                 ),
+                               validator: (value){
+                                  if (value ==null || value.isEmpty){
+                                    return null;
+                                  } 
+                                  else if (_exist){
+                                    return 'Category already exists';
+                                  } 
+                                  else if (value.isNotEmpty && value.length <= 14 ){
+                                    widget.goal.goalcategory = value;
+                                    return null;
+                                  }
+                                  else if(value.isNotEmpty && value.length > 14 ){
+                                    return 'Category Name is too long!';
+                                  }
+                                },  
                               ),
                                               
                               DropdownButtonFormField<String>(
-                                value: value,
+                                value: widget.goal.frequency,
                                 key: _textformfield_frequency,
                                 dropdownColor: Color.fromARGB(255 ,221,223,245),
                                 isExpanded: true,
@@ -284,7 +343,6 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
                                   color:  Color.fromRGBO(100, 88, 204, 1),
                                 ),
                                 decoration:  InputDecoration(
-                                  hintText: 'How often would you like to achieve your goal?',
                                   labelText: 'Frequency',
                                   labelStyle: const TextStyle(
                                     fontSize: 18,
@@ -307,12 +365,8 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
                                   filled: true,
                                 ),
                                 validator: (value){
-                                  if (value!.isEmpty){
-                                    return 'you must choose a frequency';
-                                  }
-                                  else{
-                                    return null;
-                                  }
+                                  widget.goal.frequency = value;
+                                  return null;
                                 },
                               ),
                                               
@@ -320,7 +374,7 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
                                 key: _textformfield_times,
                                 controller: _timesController,
                                 decoration:  InputDecoration(
-                                  hintText: 'Adjust if you want more than once a day/week/month',
+                                  hintText: widget.goal.total.toString(),
                                   labelText: 'Times',
                                   labelStyle: const TextStyle(
                                     fontSize: 18,
@@ -345,22 +399,23 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
                                 ),
                                 keyboardType: TextInputType.number,
                                 validator: (val){
-                                  if (val!.isEmpty){
-                                    return 'Please put your desired number of repetition/s';
+                                  if (val == null || val.isEmpty){
+                                    return null;
                                   }
-                                              
-                                  else if (frequency == 'Daily' && double.tryParse(val)!<= 24 ){
+                                  else if (frequency == 'Daily' && int.parse(val) <= 24 ){
+                                    widget.goal.total = int.parse(val);
                                     return null;
                                   }
                                   
-                                  else if (frequency == 'Weekly' && double.tryParse(val)!<= 6 ){
+                                  else if (frequency == 'Weekly' && int.parse(val) <= 6 ){
+                                    widget.goal.total = int.parse(val);
                                     return null;
                                   }
                                               
-                                  else if (frequency == 'Monthly' && double.tryParse(val)!<= 30 ){
+                                  else if (frequency == 'Monthly' && double.parse(val) <= 30 ){
+                                    widget.goal.total = int.parse(val);
                                     return null;
                                   }
-                                              
                                   else {
                                     return 'You have exceeded the maximum amount of repetitions';
                                   } 
@@ -371,7 +426,7 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
                                 key: _textformfield_duration,
                                 controller: _durationController,
                                 decoration:  InputDecoration(
-                                  hintText: 'How many hours would it take?',
+                                  hintText: widget.goal.duration.toString(),
                                   labelText: 'Duration',
                                   labelStyle: const TextStyle(
                                     fontSize: 18,
@@ -395,17 +450,21 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
                                 ),
                                 keyboardType: TextInputType.number,
                                 validator: (value){
-                                  if (value!.isEmpty){
-                                    return 'Please enter duration';
+                                  if (value == null || value.isEmpty){
+                                    return null;
                                   }
-                                  else if (frequency == 'Daily' && (int.tryParse(value)!*int.tryParse(_timesController.text)!)  > 24){
+                                  else if (frequency == 'Daily' && (int.parse(value)*int.parse(_timesController.text))  > 24){
                                     return 'Duration exceeded number of hours per day!';
                                   }
-                                  else if (frequency == 'Weekly' && (int.tryParse(value)!*int.tryParse(_timesController.text)!) > 168){
+                                  else if (frequency == 'Weekly' && (int.parse(value)*int.parse(_timesController.text)) > 168){
                                     return 'Duration exceeded number of hours per week!';
                                   }
-                                  else if (frequency == 'Monthly' && (int.tryParse(value)!* int.tryParse(_timesController.text)!) > 744){
+                                  else if (frequency == 'Monthly' && (int.parse(value)* int.parse(_timesController.text)) > 744){
                                     return 'Duration exceeded number of hours per month!';
+                                  }
+                                  else if (value.isNotEmpty) {
+                                    widget.goal.duration = int.parse(value);
+                                    return null;
                                   }
                                 },
                               ),
@@ -414,7 +473,7 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
                                 key: _textformfield_goalDescription,
                                 controller: _goalDescriptionController,
                                 decoration:  InputDecoration(
-                                  hintText: 'Detailed description of your goal.',
+                                  hintText: widget.goal.desc,
                                   labelText: 'Description',
                                   labelStyle: const TextStyle(
                                     fontSize: 18,
@@ -437,14 +496,18 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
                                   filled: true,
                                 ),
                                 validator: (value){
-                                  if (value!.isEmpty){
-                                    return 'Please add a goal description';
+                                  if (value == null) {
+                                    return null;
                                   }
-                                  else if (value.isNotEmpty && value.length <= 99 ){
+                                  if (value.isNotEmpty && value.length <= 99 ){
+                                    widget.goal.desc = value;
                                     return null;
                                   } 
-                                  else {
+                                  else if (value.isNotEmpty && value.length > 99 ) {
                                     return 'Goal description is too long!';
+                                  }
+                                  else{
+                                    return null;
                                   }
                                 },
                                 keyboardType: TextInputType.multiline,
@@ -458,21 +521,42 @@ class _EditGoalState extends State<EditGoal> with TickerProviderStateMixin  {
                                   var goalID = _goalNameController.text;
 
                                   if (_formKey4.currentState!.validate()){
-                                     _goals.add(_goalNameController.text);
-                                     await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('goals').doc(_goalNameController.text).set({
-                                      'goal': _goalNameController.text,
-                                      'goalcategory': _goalCategoryController.text,
-                                      'frequency': frequency,
-                                      'total': int.parse(_timesController.text),
-                                      'duration': int.parse(_durationController.text),
-                                      'desc': _goalDescriptionController.text,
-                                      'percent' : 0, 
-                                      'progress' : 0, 
+                                    print('nce');
+                                    await doesCategoryAlreadyExist(_goalCategoryController.text);
+                                    _goals.add(_goalNameController.text);
+                                    //delete goal from category list
+                                    await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(og_goalcat).collection('goals').doc(og_goal).delete();
+                                    // delete goal from goal list
+                                    await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('goals').doc(og_goal).delete().whenComplete(() async {
+                                      //update category list
+                                      await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(widget.goal.goalcategory).collection('goals').doc(widget.goal.goal).set({
+                                        'goal': widget.goal.goal,
+                                        'goalcategory': widget.goal.goalcategory,
+                                        'frequency': frequency,
+                                        'total': widget.goal.total,
+                                        'duration': widget.goal.duration,
+                                        'desc': widget.goal.desc,
+                                        'percent' : widget.goal.percent, 
+                                        'progress' : widget.goal.progress, 
+                                        'lastlog': Timestamp.now(),
+                                      });
+                                      //update goal list
+                                      await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('goals').doc(widget.goal.goal).set({
+                                        'goal': widget.goal.goal,
+                                        'goalcategory': widget.goal.goalcategory,
+                                        'frequency': frequency,
+                                        'total': widget.goal.total,
+                                        'duration': widget.goal.duration,
+                                        'desc': widget.goal.desc,
+                                        'percent' : widget.goal.percent, 
+                                        'progress' : widget.goal.progress, 
+                                        'lastlog': Timestamp.now(),
                                       });
                                      showDialog(
                                        context: context,
                                        builder: (BuildContext context) => _buildPopupDialogGoal(context),
                                      );
+                                  });
                                   }
                                   else{}
                                 },  
