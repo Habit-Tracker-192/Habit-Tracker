@@ -1,4 +1,5 @@
 //package
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:first_app/services/authenticate.dart';
@@ -9,7 +10,7 @@ import 'dart:io';
 //screeens
 import 'goals.dart';
 import 'notifs.dart';
-import 'addgoal.dart';
+import 'addgoal2.dart';
 import 'profile.dart';
 import 'home.dart';
 import 'signup.dart';
@@ -143,6 +144,8 @@ class Login extends StatelessWidget {
                                                     context: context,
                                                   );
                                                   if (user != null) {
+                                                    final uid = FireAuth().currentUser?.uid;
+                                                    await FirebaseFirestore.instance.collection('UserData').doc(uid).update({'lastlogin': Timestamp.now()});
                                                     Navigator.of(context)
                                                       .pushReplacement(
                                                         MaterialPageRoute(builder: (context) => const MyHomePage(title: '',)),
