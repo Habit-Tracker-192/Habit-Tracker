@@ -453,7 +453,8 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                                       'categProgress': progress,
                                       'categTotal': total,
                                       'categTargetHours': int.parse(_targetHoursController.text),
-                                      'categDesc': _categoryDescriptionController.text
+                                      'categDesc': _categoryDescriptionController.text,
+                                      'hasGoal': false,
                                     });
                                       // await getCategoryList(); //adsdasd
                                     showDialog(
@@ -756,6 +757,12 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                                      goal.add(_goalNameController.text);
                                      final uid = FireAuth().currentUser?.uid;
                                      var goalID = _goalNameController.text;
+                                     
+                                     //update category to contain goal
+                                     await FirebaseFirestore.instance.collection(
+                                      'UserData').doc(uid)
+                                      .collection('categories').doc(_goalNameController.text)
+                                      .update({'hasGoal':true});
 
                                      //2 items are created one in goal list and one in category list
                                      //CollectionReference collectionReference = FirebaseFirestore.instance.collection('UserData').doc(uid).collection('goals');
