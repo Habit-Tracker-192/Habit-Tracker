@@ -68,24 +68,24 @@ class _GoalCard2State extends State<GoalCard2> {
                               }
                               else {}});
                               var goalID = widget._goal.goal;
-                              //update timestamp
+                              //update percent, progress, and lastlog
                               await FirebaseFirestore.instance.collection(
                                   'UserData').doc(FireAuth().currentUser?.uid)
                                   .collection('goals').doc(goalID)
-                                  .update({'progress': widget._goal.progress, 'lastlog': Timestamp.now()});
-                              //update percent
-                              await FirebaseFirestore.instance.collection(
-                                  'UserData').doc(FireAuth().currentUser?.uid)
-                                  .collection('goals').doc(goalID)
-                                  .update({'percent':(widget._goal.progress/widget._goal.total)*100});
+                                  .update({'progress': widget._goal.progress, 'lastlog': Timestamp.now(), 'percent':(widget._goal.progress/widget._goal.total)*100});
 
-                              //update category progress
+                              //update category progress in goal list
                               final docRef = await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(widget._goal.goalcategory).get();
                               num currentCategProgress = docRef.get("categProgress");
                               await FirebaseFirestore.instance.collection(
-                                  'UserData').doc(FireAuth().currentUser?.uid)
+                                  'UserData').doc(uid)
                                   .collection('categories').doc(widget._goal.goalcategory)
                                   .update({'categProgress': currentCategProgress+widget._goal.duration});
+
+                              //update percent,progress, and lastlog  in category list
+                              await FirebaseFirestore.instance.collection('UserData').doc(uid)
+                                  .collection('categories').doc(widget._goal.goalcategory).collection('goals').doc(goalID)
+                                  .update({'percent':(widget._goal.progress/widget._goal.total)*100, 'lastlog': Timestamp.now(), 'progress':widget._goal.progress});
                             }
 
                             ),
