@@ -62,10 +62,10 @@ class CategoryCard extends StatelessWidget {
                           },
                         ),                         
                       Center(child:
-                        SizedBox(width: 10)
+                        SizedBox(width: 5)
                       ),//_category.categProgress/_category.categTotal)*100).toInt().toString() 
                           
-                      Text('% completed', style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
+                      Text(((_category.categProgress/_category.categTargetHours)*100).round().toString()+'% completed', style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
                           fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
                           letterSpacing: 1.3)),
                     ],
@@ -84,12 +84,12 @@ class CategoryCard extends StatelessWidget {
                           Center(child:
                             SizedBox(width: 245)
                           ),
-                          Text(_category.categTotal.toString(), style: TextStyle(fontSize: 12, color:
+                          Text(_category.categTargetHours.toString(), style: TextStyle(fontSize: 12, color:
                           Color.fromARGB(255, 143, 141, 150))),
                         ],
                       ),
                       linearStrokeCap: LinearStrokeCap.roundAll,
-                      percent: _category.categProgress/_category.categTotal,
+                      percent: _category.categProgress/_category.categTargetHours,
                       progressColor: Color.fromARGB(255, 61, 68, 95),
                       backgroundColor: Color.fromARGB(255, 228, 223, 238),
                     ),
