@@ -88,21 +88,24 @@ class AlertDialogs {
             RaisedButton(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               onPressed: () async { 
-                  //String? data = _goal.goal;
+                  
                   final uid = FireAuth().currentUser?.uid;
-                  (goal != "Instance of 'CategoryEntity") ?
+                  
                   await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('goals').doc(goal).delete().whenComplete(() {
-                        print("$goal deleted"); 
+                        print("$goal deleted in goal collection"); 
                         FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(category).update({'hasGoal': false});
-                        Navigator.of(context).pop(DialogsAction.yes);
-                        showDialog(
+                  Navigator.of(context).pop(DialogsAction.yes);
+                  showDialog(
                         context: context,
                         builder: (BuildContext context) => _buildPopupDialogDeleteGoal(context));
-                        }): print("");
+                        });
+                  await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(category).collection('goals').doc(goal).delete().whenComplete(() {
+                        print("$goal deleted in category collection"); 
+                        });
+                  },
               child: Text(
                 'Confirm', style: TextStyle(color: Color.fromARGB(255, 121, 38, 216), fontWeight: FontWeight.bold),
-              );
-              }
+              ),
             ),
             RaisedButton(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
