@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:first_app/models/categList.dart';
 import 'package:first_app/services/authenticate.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +13,7 @@ class EditCateg {
   //DocumentReference reference = FirebaseFirestore.instance.reference();
   static Future<DialogsAction> yesCancelDialog(
     BuildContext context,
-    String category,
+    CategoryEntity category,
     String title,
     String body,
     
@@ -35,7 +36,7 @@ class EditCateg {
             height: 50,
             alignment: Alignment.centerLeft,
             padding: EdgeInsets.fromLTRB(10,0,0,0),
-            child: Text("Category: " + category, style: TextStyle(fontSize: 20, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
+            child: Text("Category: " + category.category.toString(), style: TextStyle(fontSize: 20, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
             color: Color.fromARGB(255, 72, 68, 80)))
           ),
           Center(child:
@@ -87,18 +88,24 @@ class EditCateg {
                 RaisedButton(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   onPressed: () async { 
-                    
                       final uid = FireAuth().currentUser?.uid;
-                      await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(category).update({'categTotal': (int.parse(_search!.text))})
+                      if (int.parse(_search!.text) >= category.categProgress.toDouble()){
+                                   
+                      await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(category.category.toString()).update({'categTotal': (int.parse(_search.text))})
                             .whenComplete(() {
-                              Navigator.of(context).pop(DialogsAction.yes);
-                             print("$category total updated");
-                             showDialog(
-                              context: context,
-                              builder: (BuildContext context) => _buildPopupDialogTotalUpdated(context));                             
-                              });                             
-                      
-                      },
+                             print("$category total updated"); }); 
+                                                       
+                      Navigator.of(context).pop(DialogsAction.yes);
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) => _buildPopupDialogTotalUpdated(context));}
+                      else {
+                      print("Invalid Hours!");
+                      Navigator.of(context).pop(DialogsAction.yes);
+                        showDialog(
+                        context: context,
+                        builder: (BuildContext context) => _buildPopupDialogInvalidHours(context));
+                      }},
                   child: Text(
                     'Update', style: TextStyle(color: Color.fromARGB(255, 121, 38, 216), fontWeight: FontWeight.bold),
                   ),
@@ -125,6 +132,7 @@ class EditCateg {
     
   }
 }
+
 Widget _buildPopupDialogTotalUpdated(BuildContext context) {
     return AlertDialog(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -143,4 +151,22 @@ Widget _buildPopupDialogTotalUpdated(BuildContext context) {
       ),
     ],
   );
+  
   }
+  Widget _buildPopupDialogInvalidHours(BuildContext context) {
+    return AlertDialog(
+    title: const Text('Invalid Total Hours!'),
+    content:  Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+    ),
+    actions: <Widget>[
+       FlatButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        textColor: Theme.of(context).primaryColor,
+        child: const Text('Close'),
+      ),
+    ],
+  );}
