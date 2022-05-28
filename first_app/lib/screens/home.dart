@@ -1,22 +1,20 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../components/goal_card2.dart';
 import 'package:first_app/models/goalList.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:first_app/services/authenticate.dart';
-import 'package:date_format/date_format.dart';
+import 'package:intl/intl.dart';
+// import 'package:date_format/date_format.dart';
+import 'package:flutter/foundation.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
   @override
   _HomePageState createState() => _HomePageState();
 }
-
 class _HomePageState extends State<HomePage> {
   DateTime currentTime = DateTime.now();
-
   @override
   Widget build(BuildContext context) => DefaultTabController (
       length: 3,
@@ -35,13 +33,12 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 child: Container(
-
                   margin: EdgeInsets.all(2),
                   padding: EdgeInsets.fromLTRB(1.0, 110.0, .0, 100.0),
                   width: 500,
                   child: Text(DateFormat.yMd().format(currentTime),
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontFamily: 'Poppins',
                         fontStyle: FontStyle.normal,
                         fontWeight: FontWeight.bold,
