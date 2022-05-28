@@ -4,6 +4,7 @@ import 'package:first_app/components/alert_dialog.dart';
 import 'package:first_app/components/alert_dialog_cat.dart';
 import 'package:first_app/components/goal_card.dart';
 import 'package:first_app/models/goalList.dart';
+import 'package:first_app/screens/searchGoal.dart';
 import 'package:flutter/material.dart';
 import '../components/categ_card.dart';
 import '../models/categList.dart';
@@ -32,10 +33,13 @@ class _GoalState extends State<Goal> {
         title: Container(
           child: IconButton(
             alignment: Alignment.topRight,
-            padding: EdgeInsets.fromLTRB(350, 15, 0, 0),
+            padding: EdgeInsets.fromLTRB(270, 15, 0, 0),
             icon: Icon(Icons.search_rounded, size: 30.0),
 
-            onPressed: (){},
+            onPressed: (){
+              Navigator.push(context,
+                MaterialPageRoute(builder: (context) => SearchGoal()));
+            },
           ), 
         ),
         bottom: TabBar(
