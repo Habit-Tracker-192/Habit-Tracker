@@ -13,12 +13,14 @@ import 'package:flutter/material.dart';
 
 
 class categDetail extends StatefulWidget {
+  final CategoryEntity _category;
+  const categDetail(this._category);
+  
   _categDetailState createState() => _categDetailState();
 }
 
 class _categDetailState extends State<categDetail> { 
   
-  //CategoryCard(this._category);
   List<Object> _categGoals = [];
 
   @override
@@ -33,13 +35,13 @@ class _categDetailState extends State<categDetail> {
       .collection('UserData')
       .doc(uid)
       .collection('categories')
-      .doc('Education')
+      .doc(widget._category.category.toString())
       .collection('goals')
-      .where("goalcategory", isEqualTo: 'Education')
+      //.where("goalcategory", isEqualTo: 'Education')
       .get();
       
     setState(() {
-      _categGoals = List.from(data.docs.map((doc)=> CategGoalEntity.fromSnapshot(doc)));
+      _categGoals = List.from(data.docs.map((doc)=> GoalEntity.fromSnapshot(doc)));
     });
   }
 
@@ -74,14 +76,14 @@ class _categDetailState extends State<categDetail> {
           Container( //CATEGORY TEXT
             height: 30,
             alignment: Alignment.centerLeft,
-            child: Text('     '+ 'Education', style: TextStyle(fontSize: 20, fontFamily: 'Poppins',
+            child: Text('     '+ widget._category.category.toString(), style: TextStyle(fontSize: 20, fontFamily: 'Poppins',
             fontWeight: FontWeight.bold, color: Color.fromARGB(255, 72, 68, 80)))
           ),
 
           Container( //CATEGORY TEXT
             height: 30,
             alignment: Alignment.centerLeft,
-            child: Text('     Target hours: 70h', style: TextStyle(fontSize: 18, fontFamily: 'Poppins',
+            child: Text('     Target hours: ' + widget._category.categTargetHours.toString() + " hrs", style: TextStyle(fontSize: 18, fontFamily: 'Poppins',
             color: Color.fromARGB(255, 94, 93, 189), fontStyle: FontStyle.italic))
           ),
 
@@ -91,7 +93,7 @@ class _categDetailState extends State<categDetail> {
             padding: EdgeInsets.fromLTRB(0,20,0,0),
             itemCount: _categGoals.length,
             shrinkWrap: true,
-            itemBuilder: (BuildContext context, int index) =>  CategGoalCard(_categGoals[index] as CategGoalEntity) 
+            itemBuilder: (BuildContext context, int index) =>  GoalCard(_categGoals[index] as GoalEntity) 
             ),
           ),
         ]),
