@@ -754,14 +754,12 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                                 onPressed: () async {
                                   await doesCategoryAlreadyExist(_goalCategoryController.text);
                                   if (_formKey4.currentState!.validate()){
-                                     goal.add(_goalNameController.text);
                                      final uid = FireAuth().currentUser?.uid;
                                      var goalID = _goalNameController.text;
                                      
                                      //update category to contain goal
-                                     await FirebaseFirestore.instance.collection(
-                                      'UserData').doc(uid)
-                                      .collection('categories').doc(_goalNameController.text)
+                                     await FirebaseFirestore.instance.collection('UserData').doc(uid)
+                                      .collection('categories').doc(_goalCategoryController.text)
                                       .update({'hasGoal':true});
 
                                      //2 items are created one in goal list and one in category list
@@ -778,11 +776,7 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                                       'progress' : progress, 
                                       });//(progress / (int.parse(_timesController.text) * int.parse(_durationController.text)))*100, 'total' : (int.parse(_timesController.text) * int.parse(_durationController.text))});
                                       // await getGoalList();
-                                      showDialog(
-                                       context: context,
-                                       builder: (BuildContext context) => _buildPopupDialogGoal(context) ,
-                                      );  
-                                      await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(_categoryNameController.text).collection('goals').doc(goalID).set({
+                                      await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(_goalCategoryController.text).collection('goals').doc(goalID).set({
                                         'goal': _goalNameController.text,  
                                         'goalcategory': _goalCategoryController.text,
                                         'frequency': frequency,
@@ -793,6 +787,12 @@ class _AddGoalState extends State<AddGoal> with TickerProviderStateMixin  {
                                         'percent' : (progress/(int.parse(_timesController.text)))*100, 
                                         'progress' : progress, 
                                       });
+                                      goal.add(_goalNameController.text);
+                                      showDialog(
+                                       context: context,
+                                       builder: (BuildContext context) => _buildPopupDialogGoal(context) ,
+                                      );  
+                                      
                                       // await getCategoryList();
                                   }
                                   else{}
