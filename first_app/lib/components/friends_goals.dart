@@ -74,6 +74,7 @@ class _FriendGoalCardState extends State<FriendGoalCard> {
                             ],),
                                     
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.fromLTRB(0,0,0,7),
@@ -84,14 +85,17 @@ class _FriendGoalCardState extends State<FriendGoalCard> {
                                   ),
                                           
                                 Center(child:
-                                  SizedBox(width: 210)
+                                  SizedBox(width: 100,)
                                 ),
                                           
-                                Text(
-                                    widget._goal.percent.toString() + '%', 
-                                    style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
-                                    fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.3)),
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Text(
+                                      widget._goal.percent.toInt().toString() + '%', 
+                                      style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
+                                      fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
+                                      letterSpacing: 1.3)),
+                                ),
                               ],
                             ),
             
