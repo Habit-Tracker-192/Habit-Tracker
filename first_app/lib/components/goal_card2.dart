@@ -68,15 +68,24 @@ class _GoalCard2State extends State<GoalCard2> {
                               }
                               else {}});
                               var goalID = widget._goal.goal;
+                              //update timestamp
                               await FirebaseFirestore.instance.collection(
                                   'UserData').doc(FireAuth().currentUser?.uid)
                                   .collection('goals').doc(goalID)
                                   .update({'progress': widget._goal.progress, 'lastlog': Timestamp.now()});
-
+                              //update percent
                               await FirebaseFirestore.instance.collection(
                                   'UserData').doc(FireAuth().currentUser?.uid)
                                   .collection('goals').doc(goalID)
                                   .update({'percent':(widget._goal.progress/widget._goal.total)*100});
+
+                              //update category progress
+                              final docRef = await FirebaseFirestore.instance.collection('UserData').doc(uid).collection('categories').doc(widget._goal.goalcategory).get();
+                              num currentCategProgress = docRef.get("categProgress");
+                              await FirebaseFirestore.instance.collection(
+                                  'UserData').doc(FireAuth().currentUser?.uid)
+                                  .collection('categories').doc(widget._goal.goalcategory)
+                                  .update({'categProgress': currentCategProgress+widget._goal.duration});
                             }
 
                             ),
