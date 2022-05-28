@@ -8,11 +8,20 @@ import 'package:first_app/models/goalList.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 
-class GoalCard extends StatelessWidget {
+import '../screens/editgoal.dart';
+
+
+class GoalCard extends StatefulWidget {
   final GoalEntity _goal;
-  final uid = FireAuth().currentUser?.uid;
 
   GoalCard(this._goal);
+
+  @override
+  State<GoalCard> createState() => _GoalCardState();
+}
+
+class _GoalCardState extends State<GoalCard> {
+  final uid = FireAuth().currentUser?.uid;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +52,7 @@ class GoalCard extends StatelessWidget {
                       Row(
                         //crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(_goal.goal.toString(), style: TextStyle(color: 
+                          Text(widget._goal.goal.toString(), style: TextStyle(color: 
                             Color.fromARGB(255, 72, 68, 80), fontSize: 
                             18.0, fontWeight: FontWeight.bold, fontFamily: 'Poppins',
                             letterSpacing: 1.1),),
@@ -53,7 +62,12 @@ class GoalCard extends StatelessWidget {
                             padding: EdgeInsets.only(left:5),
                             icon: Icon(Icons.edit, size: 15.0),
                           
-                            onPressed: (){},
+                            onPressed: ()async{
+
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => EditGoal(goal: widget._goal)
+                                ));
+                            },
                           ),  
                           IconButton(    
                             alignment: Alignment.centerRight,
@@ -61,7 +75,7 @@ class GoalCard extends StatelessWidget {
                             icon: Icon(Icons.clear_rounded, size: 15.0),
 
                             onPressed: () async {
-                              final action = await AlertDialogs.yesCancelDialog(context, _goal.goal.toString(), _goal.goalcategory.toString(), 'Delete Goal', 'Are you sure you want to delete ');
+                              final action = await AlertDialogs.yesCancelDialog(context, widget._goal.goal.toString(), widget._goal.goalcategory.toString(), 'Delete Goal', 'Are you sure you want to delete ');
                             },
                           ),    
                       ],),
@@ -70,7 +84,7 @@ class GoalCard extends StatelessWidget {
                         children: [
                           Padding(
                             padding: const EdgeInsets.fromLTRB(0,0,0,7),
-                            child: Text(_goal.goalcategory.toString(), style: TextStyle(color: 
+                            child: Text(widget._goal.goalcategory.toString(), style: TextStyle(color: 
                             Color.fromARGB(255, 94, 93, 189), fontStyle: FontStyle.italic,
                               fontFamily: 'Poppins', fontWeight: FontWeight.bold, 
                               fontSize: 13.0, letterSpacing: 1.0)),
@@ -80,7 +94,7 @@ class GoalCard extends StatelessWidget {
                             SizedBox(width: 210)
                           ),
                           
-                          Text(((_goal.progress/_goal.total)*100).toInt().toString() 
+                          Text(((widget._goal.progress/widget._goal.total)*100).toInt().toString() 
                               + '%', style: TextStyle(color: Color.fromARGB(255, 72, 68, 80),
                               fontSize: 12, fontFamily: 'Poppins', fontWeight: FontWeight.bold,
                               letterSpacing: 1.3)),
@@ -96,17 +110,17 @@ class GoalCard extends StatelessWidget {
                           center: Row(
                             
                             children: [
-                              Text(_goal.progress.toString(), style: TextStyle(fontSize: 12, color:
+                              Text(widget._goal.progress.toString(), style: TextStyle(fontSize: 12, color:
                               Color.fromARGB(255, 228, 223, 238))),
                               Center(child:
                                 SizedBox(width: 260)
                               ),
-                              Text(_goal.total.toString(), style: TextStyle(fontSize: 12, color:
+                              Text(widget._goal.total.toString(), style: TextStyle(fontSize: 12, color:
                               Color.fromARGB(255, 143, 141, 150))),
                             ],
                           ),
                           linearStrokeCap: LinearStrokeCap.roundAll,
-                          percent: _goal.progress/_goal.total,
+                          percent: widget._goal.progress/widget._goal.total,
                           progressColor: Color.fromARGB(255, 104, 106, 207),
                           backgroundColor: Color.fromARGB(255, 228, 223, 238),
                         ),
