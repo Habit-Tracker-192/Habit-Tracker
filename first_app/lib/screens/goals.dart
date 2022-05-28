@@ -125,7 +125,8 @@ class _RecentState extends State<Recent> {  //RECENT TAB
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(
+    resizeToAvoidBottomInset: false,
+    body: SingleChildScrollView(
       child: Column(
         children: [
           Container(  //RECENT GOALS LISTVIEW
