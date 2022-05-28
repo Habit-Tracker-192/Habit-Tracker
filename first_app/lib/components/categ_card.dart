@@ -49,7 +49,7 @@ class CategoryCard extends StatelessWidget {
                           icon: Icon(Icons.edit_rounded, size: 15.0),
                         
                           onPressed: () async{
-                            final action = await EditCateg.yesCancelDialog(context, _category.category.toString(), 'Edit Category', 'Total Hours ');
+                            final action = await EditCateg.yesCancelDialog(context, _category, 'Edit Category', 'Total Hours ');
                           },
                         ),  
                       IconButton(
